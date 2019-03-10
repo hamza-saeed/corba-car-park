@@ -14,7 +14,7 @@ public class EntryClient extends JFrame {
 
     public EntryClient(){
 
-        JFrame frame = new JFrame("My First GUI");
+        JFrame frame = new JFrame("My first GUI");
         JPanel panel = new JPanel();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300,300);
