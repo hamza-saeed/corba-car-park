@@ -1,0 +1,13 @@
+module CarPark {
+
+    interface ExitGate {
+
+        readonly attribute string machine_name;
+        void registerGate(in string machineName);
+        void car_exited(in string reg, in long date, in long time);
+        void turn_on();
+        void turn_off();
+        void reset();
+
+    };
+};
