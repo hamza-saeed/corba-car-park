@@ -4,13 +4,16 @@ import CarPark.Log_of_vehicle_eventsHolder;
 import CarPark.VehicleEvent;
 import org.omg.CORBA.ORB;
 
+import java.util.ArrayList;
+
 public class LServerImpl extends LocalServerPOA {
     Log_of_vehicle_eventsHolder log = new Log_of_vehicle_eventsHolder();
 
     public LServerImpl()
     {
-
+        log.value = new VehicleEvent[10];
     }
+
 
 
     @Override
@@ -25,8 +28,9 @@ public class LServerImpl extends LocalServerPOA {
 
     @Override
     public void vehicle_in(VehicleEvent event) {
-        VehicleEvent[] events = new VehicleEvent[1];
-        events[0] = event;
+
+        log.value[0] = event;
+
     }
 
     @Override

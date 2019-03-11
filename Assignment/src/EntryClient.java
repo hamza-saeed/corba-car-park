@@ -44,7 +44,6 @@ public class EntryClient extends JFrame {
         // Initialize the ORB
         System.out.println("Initializing the ORB");
         ORB orb = ORB.init(args, null);
-
         // Get a reference to the Naming service
         org.omg.CORBA.Object nameServiceObj =
                 null;
