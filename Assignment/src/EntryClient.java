@@ -1,11 +1,15 @@
 import CarPark.EntryGate;
 import CarPark.EntryGateHelper;
+import CarPark.Time;
 import org.omg.CORBA.*;
 import org.omg.CosNaming.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 
 public class EntryClient extends JFrame {
 
@@ -14,10 +18,10 @@ public class EntryClient extends JFrame {
 
     public EntryClient(){
 
-        JFrame frame = new JFrame("My first GUI");
+        JFrame frame = new JFrame("Entry Client");
         JPanel panel = new JPanel();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300,300);
+        frame.setSize(400,300);
         JLabel lbl1 = new JLabel("Car Park Entry Gate");
         JLabel lbl2 = new JLabel("Vehicle Registration:");
          txtReg = new JTextField(30);
@@ -67,7 +71,20 @@ public class EntryClient extends JFrame {
             btnAddReg.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    entry.car_entered(txtReg.getText(),10,10);
+                    LocalDateTime a = LocalDateTime.now();
+                    CarPark.Date date = new CarPark.Date();
+                    Time time = new Time();
+                    date.day = a.getDayOfMonth();
+                    date.month = a.getMonth().getValue();
+                    date.year = a.getYear();
+
+                    time.hr = a.getHour();
+                    time.min = a.getMinute();
+                    time.sec = a.getSecond();
+
+
+                    entry.car_entered(txtReg.getText(),date,time);
+
                 }
             });
 

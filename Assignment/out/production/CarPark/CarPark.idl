@@ -1,0 +1,69 @@
+module CarPark {
+
+    struct Date {
+        long day;
+        long month;
+        long year;
+    };
+
+    struct Time {
+        long hr;
+        long min;
+        long sec;
+    };
+
+    struct VehicleEvent {
+        Time time;
+    	Date date;
+    	string registration_number;
+    };
+
+    interface EntryGate {
+
+        readonly attribute string machine_name;
+        void registerGate(in string machineName);
+        void car_entered(in string reg, in Date date, in Time time);
+        void turn_on();
+        void turn_off();
+        void reset();
+
+    };
+
+    interface ExitGate {
+
+        readonly attribute string machine_name;
+        void registerGate(in string machineName);
+        void car_exited(in string reg, in Date date, in Time time);
+        void turn_on();
+        void turn_off();
+        void reset();
+
+    };
+
+     interface  HQServer {
+        void raise_alarm(in VehicleEvent event);
+        void register_local_server(in string server_name, in string server_ior);
+     };
+
+    typedef sequence<VehicleEvent> Log_of_vehicle_events;
+
+    interface  LocalServer {
+        readonly attribute string location;
+        readonly attribute Log_of_vehicle_events log;
+        void vehicle_in(in VehicleEvent event);
+        void vehicle_out(in VehicleEvent event);
+        boolean vehicle_in_car_park(in string registration_number);
+        long return_cash_total();
+        void add_entry_gate(in string gate_name, in string gate_ior);
+        void add_exit_gate(in string gate_name, in string gate_ior);
+        void add_pay_station(in string station_name, in string station_ior);
+        };
+
+    interface  PayStation {
+        readonly attribute string machine_name;
+        void turn_on();
+        void turn_off();
+        void reset();
+        long return_cash_total();
+    };
+};
