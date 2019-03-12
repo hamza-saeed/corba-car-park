@@ -30,7 +30,10 @@ public class PayStationImpl extends PayStationPOA {
 
     @Override
     public String pay(String carReg, Date payDate, Time payTime, int duration) {
-        return null;
+        LServerImpl lserverimp = new LServerImpl();
+        //lserverimp.vehicle_paid;
+        System.out.println("Car Reg:" + carReg + " paid.");
+        return "";
     }
 
 

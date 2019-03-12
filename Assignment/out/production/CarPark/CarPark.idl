@@ -64,6 +64,8 @@ module CarPark {
         void turn_on();
         void turn_off();
         void reset();
+        boolean checkVehicleInCarPark(in string carReg);
+        string pay(in string carReg, in Date payDate, in Time payTime, in long duration);
         long return_cash_total();
     };
 };

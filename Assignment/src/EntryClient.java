@@ -63,7 +63,7 @@ public class EntryClient extends JFrame {
             return;
         }
 
-        String  name = "countName";
+        String  name = "EntryClient";
         EntryGate entry = EntryGateHelper.narrow(nameService.resolve_str(name));
 
 
@@ -80,7 +80,6 @@ public class EntryClient extends JFrame {
                     time.hr = a.getHour();
                     time.min = a.getMinute();
                     time.sec = a.getSecond();
-
 
                     entry.car_entered(txtReg.getText(),date,time);
 

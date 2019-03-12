@@ -1,5 +1,7 @@
 import CarPark.EntryGate;
 import CarPark.EntryGateHelper;
+import CarPark.PayStation;
+import CarPark.PayStationHelper;
 import org.omg.CORBA.*;
 import org.omg.CosNaming.*;
 import org.omg.PortableServer.POA;
@@ -18,11 +20,19 @@ public class LServer {
        rootpoa.the_POAManager().activate();
 
        // Create the Count servant object
-       EntryGateImpl count = new EntryGateImpl();
+       EntryGateImpl entryImpl = new EntryGateImpl();
 
        // get object reference from the servant
-       org.omg.CORBA.Object ref = rootpoa.servant_to_reference(count);
-       EntryGate cref = EntryGateHelper.narrow(ref);
+       org.omg.CORBA.Object entryRef = rootpoa.servant_to_reference(entryImpl);
+       EntryGate entryCref = EntryGateHelper.narrow(entryRef);
+
+//       // Create the Count servant object
+       PayStationImpl payStationImpl = new PayStationImpl();
+//
+//       // get object reference from the servant
+       org.omg.CORBA.Object payRef = rootpoa.servant_to_reference(payStationImpl);
+       PayStation payCRef = PayStationHelper.narrow(payRef);
+
 
        // Get a reference to the Naming service
        org.omg.CORBA.Object nameServiceObj =
@@ -39,10 +49,17 @@ public class LServer {
            System.out.println("nameService = null");
            return;
        }
+
        // bind the Count object in the Naming service
-       String name = "countName";
-       NameComponent[] countName = nameService.to_name(name);
-       nameService.rebind(countName, cref);
+       String entryN = "EntryClient";
+       NameComponent[] entryName = nameService.to_name(entryN);
+       nameService.rebind(entryName, entryCref);
+//
+
+       // bind the Count object in the Naming service
+       String payN = "PayStationClient";
+       NameComponent[] payName = nameService.to_name(payN);
+       nameService.rebind(payName, payCRef);
 
        //  wait for invocations from clients
        orb.run();

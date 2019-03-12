@@ -43,6 +43,8 @@ public class PayStationClient extends JFrame {
         panel.add(txtHrs);
         panel.add(btnAddReg); // Adds Button to content pane of frame
         panel.add(lblCost);
+
+        panel.add(btnPay);
         frame.add(panel);
         frame.setVisible(true);
     }
@@ -75,7 +77,7 @@ public class PayStationClient extends JFrame {
                 return;
             }
 
-            String name = "countName";
+            String name = "PayStationClient";
             PayStation payStation = PayStationHelper.narrow(nameService.resolve_str(name));
             //TODO: Get Reg - check if they entered recently.
 
@@ -112,7 +114,7 @@ public class PayStationClient extends JFrame {
                     payTime.min = dateTime.getMinute();
                     payTime.sec = dateTime.getSecond();
 
-                    payStation.pay(txtReg.getText(),payDate, payTime,(int)hrsStayed);
+                    payStation.pay(txtReg.getText(),payDate, payTime,4);
                 }
             });
 
