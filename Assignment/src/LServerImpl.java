@@ -30,16 +30,23 @@ public class LServerImpl extends LocalServerPOA {
     public void vehicle_in(VehicleEvent event) {
 
         log.value[0] = event;
-
+        //TODO: Write Event;
     }
 
     @Override
     public void vehicle_out(VehicleEvent event) {
+        //TODO: Write Event
+    }
 
+    @Override
+    public boolean vehicle_paid(VehicleEvent event) {
+        //TODO: Write Event
+        return true;
     }
 
     @Override
     public boolean vehicle_in_car_park(String registration_number) {
+        //TODO: SEARCH LOG
         return false;
     }
 

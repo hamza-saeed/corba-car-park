@@ -1,6 +1,7 @@
 import CarPark.Date;
 import CarPark.PayStationPOA;
 import CarPark.Time;
+import CarPark.VehicleEvent;
 
 public class PayStationImpl extends PayStationPOA {
     @Override
@@ -29,11 +30,23 @@ public class PayStationImpl extends PayStationPOA {
     }
 
     @Override
-    public String pay(String carReg, Date payDate, Time payTime, int duration) {
+    public boolean pay(String carReg, Date payDate, Time payTime, int duration) {
         LServerImpl lserverimp = new LServerImpl();
-        //lserverimp.vehicle_paid;
-        System.out.println("Car Reg:" + carReg + " paid.");
-        return "";
+        VehicleEvent paidEvent = new VehicleEvent();
+        paidEvent.registration_number = carReg;
+        paidEvent.time=payTime;
+        paidEvent.date=payDate;
+        //TODO: Check if Reg is in car park/duration etc.
+        if (lserverimp.vehicle_paid(paidEvent))
+        {
+            System.out.println("Car Reg:" + carReg + " paid.");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
     }
 
 

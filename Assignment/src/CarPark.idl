@@ -18,6 +18,15 @@ module CarPark {
     	string registration_number;
     };
 
+    struct Ticket {
+        string registration_number;
+        Date dateEntered;
+        Time timeEntered;
+        Date dateToLeave;
+        Time timeToLeave;
+
+    };
+
     interface EntryGate {
 
         readonly attribute string machine_name;
@@ -52,6 +61,7 @@ module CarPark {
         readonly attribute Log_of_vehicle_events log;
         void vehicle_in(in VehicleEvent event);
         void vehicle_out(in VehicleEvent event);
+        boolean vehicle_paid(in VehicleEvent event);
         boolean vehicle_in_car_park(in string registration_number);
         long return_cash_total();
         void add_entry_gate(in string gate_name, in string gate_ior);
@@ -65,7 +75,7 @@ module CarPark {
         void turn_off();
         void reset();
         boolean checkVehicleInCarPark(in string carReg);
-        string pay(in string carReg, in Date payDate, in Time payTime, in long duration);
+        boolean pay(in string carReg, in Date payDate, in Time payTime, in long duration);
         long return_cash_total();
     };
 };

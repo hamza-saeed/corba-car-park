@@ -20,6 +20,7 @@ public class PayStationClient extends JFrame {
     static JLabel lblCost;
     static JButton btnPay;
     static double hrsStayed;
+    static double cost;
 
     public PayStationClient() {
         JFrame frame = new JFrame("Pay Station");
@@ -88,7 +89,7 @@ public class PayStationClient extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         hrsStayed = Math.ceil(Double.parseDouble(txtHrs.getText()));
-                        double cost = hrsStayed * 1;
+                        cost = hrsStayed * 1;
                         lblCost.setText("£" + cost);
                     } catch (NumberFormatException nf) {
                         JOptionPane.showMessageDialog(null, "Input must be a number");
@@ -101,6 +102,7 @@ public class PayStationClient extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
+                    String reg = txtReg.getText();
 
                     LocalDateTime dateTime = LocalDateTime.now();
 
@@ -114,7 +116,19 @@ public class PayStationClient extends JFrame {
                     payTime.min = dateTime.getMinute();
                     payTime.sec = dateTime.getSecond();
 
-                    payStation.pay(txtReg.getText(),payDate, payTime,4);
+                    LocalDateTime expiry = dateTime.plusHours((long)cost);
+
+                    System.out.println("Expiry Date" + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + expiry.getYear() + "." + "Time: " + expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
+
+
+
+                    if (payStation.pay(txtReg.getText(),payDate, payTime,4)){
+                        StringBuilder ticket = new StringBuilder();
+                        ticket.append("Car Reg: " + reg);
+                        ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year);
+                        ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec);
+                        ticket.append("Leave by: " + payDate.day + "/" + payDate.month + "/" + payDate.year);
+                    }
                 }
             });
 

@@ -22,8 +22,6 @@ public class EntryGateImpl extends EntryGatePOA {
 
         LServerImpl lserver = new LServerImpl();
         lserver.vehicle_in(vehicleEvent);
-        //_orb().create_any();
-
     }
 
     @Override
