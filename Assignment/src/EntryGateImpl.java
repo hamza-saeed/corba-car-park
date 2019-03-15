@@ -2,6 +2,8 @@ import CarPark.*;
 
 public class EntryGateImpl extends EntryGatePOA {
 
+    LServerImpl lserver = new LServerImpl();
+
 
     @Override
     public String machine_name() {
