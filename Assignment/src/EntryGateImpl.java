@@ -1,6 +1,8 @@
 import CarPark.*;
 
 public class EntryGateImpl extends EntryGatePOA {
+
+
     @Override
     public String machine_name() {
         return null;
@@ -20,7 +22,6 @@ public class EntryGateImpl extends EntryGatePOA {
         vehicleEvent.time = time;
         System.out.println("Car Entered with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
 
-        LServerImpl lserver = new LServerImpl();
         lserver.vehicle_in(vehicleEvent);
     }
 

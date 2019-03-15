@@ -7,14 +7,12 @@ import org.omg.CORBA.ORB;
 import java.util.ArrayList;
 
 public class LServerImpl extends LocalServerPOA {
-    Log_of_vehicle_eventsHolder log = new Log_of_vehicle_eventsHolder();
+    ArrayList<VehicleEvent> logOfVehicleEvents;
 
     public LServerImpl()
     {
-        log.value = new VehicleEvent[10];
+        logOfVehicleEvents = new ArrayList<VehicleEvent>();
     }
-
-
 
     @Override
     public String location() {
@@ -23,30 +21,39 @@ public class LServerImpl extends LocalServerPOA {
 
     @Override
     public VehicleEvent[] log() {
-        return new VehicleEvent[0];
+        return (VehicleEvent[])logOfVehicleEvents.toArray();
     }
+
 
     @Override
     public void vehicle_in(VehicleEvent event) {
 
-        log.value[0] = event;
-        //TODO: Write Event;
+        logOfVehicleEvents.add(event);
     }
 
     @Override
     public void vehicle_out(VehicleEvent event) {
+        logOfVehicleEvents.add(event);
         //TODO: Write Event
     }
 
     @Override
     public boolean vehicle_paid(VehicleEvent event) {
+
         //TODO: Write Event
         return true;
     }
 
     @Override
     public boolean vehicle_in_car_park(String registration_number) {
-        //TODO: SEARCH LOG
+
+        for (int i = 0; i < logOfVehicleEvents.size(); i++)
+        {
+            if (logOfVehicleEvents.get(i).registration_number == registration_number)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
