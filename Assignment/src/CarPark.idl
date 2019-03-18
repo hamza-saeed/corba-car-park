@@ -20,11 +20,11 @@ module CarPark {
 
     struct Ticket {
         string registration_number;
+        double amountPaid;
         Date dateEntered;
         Time timeEntered;
         Date dateToLeave;
         Time timeToLeave;
-
     };
 
     interface EntryGate {

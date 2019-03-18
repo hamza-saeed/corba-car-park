@@ -1,17 +1,17 @@
-import CarPark.LocalServerPOA;
-import CarPark.Log_of_vehicle_eventsHelper;
-import CarPark.Log_of_vehicle_eventsHolder;
-import CarPark.VehicleEvent;
+import CarPark.*;
 import org.omg.CORBA.ORB;
 
 import java.util.ArrayList;
 
 public class LServerImpl extends LocalServerPOA {
     public static ArrayList<VehicleEvent> logOfVehicleEvents;
+    public static ArrayList<Ticket> logOfTickets;
+
 
     public LServerImpl()
     {
         logOfVehicleEvents = new ArrayList<VehicleEvent>();
+        logOfTickets = new ArrayList<Ticket>();
     }
 
     @Override
