@@ -1,7 +1,4 @@
-import CarPark.Date;
-import CarPark.PayStation;
-import CarPark.PayStationHelper;
-import CarPark.Time;
+import CarPark.*;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
@@ -117,16 +114,42 @@ public class PayStationClient extends JFrame {
                     payTime.sec = dateTime.getSecond();
 
                     LocalDateTime expiry = dateTime.plusHours((long)cost);
+                    Date expiryDate = new Date();
+                    expiryDate.day = dateTime.getDayOfMonth();
+                    expiryDate.month = dateTime.getMonth().getValue();
+                    expiryDate.year = dateTime.getYear();
+
+                    Time expiryTime = new Time();
+                    expiryTime.hr = dateTime.getHour();
+                    expiryTime.min = dateTime.getMinute();
+                    expiryTime.sec = dateTime.getSecond();
+
 
 
                     if (payStation.pay(txtReg.getText(),payDate, payTime,4)){
                         StringBuilder ticket = new StringBuilder();
-                        ticket.append("Car Reg: " + reg + "\n");
-                        ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year + " " );
-                        ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec + "\n");
-                        ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" +  expiry.getYear() + " ");
-                        ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
-                        System.out.println(ticket.toString());
+//                        ticket.append("Car Reg: " + reg + "\n");
+//                        ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year + " " );
+//                        ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec + "\n");
+//                        ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" +  expiry.getYear() + " ");
+//                        ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
+                        Ticket newTicket = new Ticket();
+                        System.out.println("Reg:" + reg);
+                        System.out.println("amountPaid:" + cost);
+                        System.out.println("dateEntered:" + payDate);
+                        System.out.println("timeEntered:" + payTime);
+                        System.out.println("dateToLeave:" + expiryDate);
+                        System.out.println("timeEntered:" + expiryTime);
+
+
+                        newTicket.registration_number = reg;
+                        newTicket.amountPaid = cost;
+                        newTicket.dateEntered = payDate;
+                        newTicket.timeEntered = payTime;
+                        newTicket.dateToLeave = expiryDate;
+                        newTicket.timeToLeave = expiryTime;
+                        payStation.createTicket(newTicket);
+//                        System.out.println(ticket.toString());
                     }
 
                 }

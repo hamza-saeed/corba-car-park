@@ -1,7 +1,4 @@
-import CarPark.Date;
-import CarPark.PayStationPOA;
-import CarPark.Time;
-import CarPark.VehicleEvent;
+import CarPark.*;
 
 public class PayStationImpl extends PayStationPOA {
 
@@ -30,6 +27,20 @@ public class PayStationImpl extends PayStationPOA {
     @Override
     public boolean checkVehicleInCarPark(String carReg) {
         return lServer.vehicle_in_car_park(carReg);
+    }
+
+    @Override
+    public boolean createTicket(Ticket newTicket) {
+        if (lServer.add_Ticket(newTicket))
+        {
+            System.out.println("Added Ticket :)");
+            return true;
+        }
+        else
+        {
+            System.out.println("Could not add ticket.");
+            return false;
+        }
     }
 
     @Override

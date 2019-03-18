@@ -1,17 +1,18 @@
 import CarPark.*;
-import org.omg.CORBA.ORB;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class LServerImpl extends LocalServerPOA {
     public static ArrayList<VehicleEvent> logOfVehicleEvents;
-    public static ArrayList<Ticket> logOfTickets;
+    public static ArrayList<Ticket> listOfTickets;
 
 
     public LServerImpl()
     {
         logOfVehicleEvents = new ArrayList<VehicleEvent>();
-        logOfTickets = new ArrayList<Ticket>();
+        listOfTickets = new ArrayList<Ticket>();
     }
 
     @Override
@@ -47,6 +48,17 @@ public class LServerImpl extends LocalServerPOA {
     }
 
     @Override
+    public boolean add_Ticket(Ticket newTicket) {
+        try {
+            listOfTickets.add(newTicket);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public boolean vehicle_in_car_park(String registration_number) {
 
         for (int i = 0; i < logOfVehicleEvents.size(); i++)
@@ -54,6 +66,8 @@ public class LServerImpl extends LocalServerPOA {
             if (logOfVehicleEvents.get(i).registration_number.equals(registration_number))
             {
                 System.out.println("Vehicle in car park");
+                System.out.println("Current money today: £" + return_cash_total());
+                System.out.println("Number of tickets: " + listOfTickets.size());
                 return true;
             }
         }
@@ -63,8 +77,18 @@ public class LServerImpl extends LocalServerPOA {
     }
 
     @Override
-    public int return_cash_total() {
-        return 0;
+    public double return_cash_total() {
+        double total = 0;
+        LocalDate currentDate = LocalDate.now();
+        for (int i = 0; i < listOfTickets.size(); i++)
+        {
+            Ticket ticket = listOfTickets.get(i);
+            if (ticket.dateEntered.day == currentDate.getDayOfMonth())
+            {
+                total += (double)ticket.amountPaid;
+            }
+        }
+        return total;
     }
 
     @Override
