@@ -7,7 +7,7 @@ import org.omg.CORBA.ORB;
 import java.util.ArrayList;
 
 public class LServerImpl extends LocalServerPOA {
-    ArrayList<VehicleEvent> logOfVehicleEvents;
+    public static ArrayList<VehicleEvent> logOfVehicleEvents;
 
     public LServerImpl()
     {
@@ -29,6 +29,8 @@ public class LServerImpl extends LocalServerPOA {
     public void vehicle_in(VehicleEvent event) {
 
         logOfVehicleEvents.add(event);
+
+        System.out.println("Size after addition: " + logOfVehicleEvents.size());
     }
 
     @Override
@@ -39,8 +41,8 @@ public class LServerImpl extends LocalServerPOA {
 
     @Override
     public boolean vehicle_paid(VehicleEvent event) {
-
-        //TODO: Write Event
+        System.out.println("size of log: " + logOfVehicleEvents.size());
+        logOfVehicleEvents.add(event);
         return true;
     }
 
@@ -49,11 +51,14 @@ public class LServerImpl extends LocalServerPOA {
 
         for (int i = 0; i < logOfVehicleEvents.size(); i++)
         {
-            if (logOfVehicleEvents.get(i).registration_number == registration_number)
+            if (logOfVehicleEvents.get(i).registration_number.equals(registration_number))
             {
+                System.out.println("Vehicle in car park");
                 return true;
             }
         }
+        System.out.println("Vehicle NOT in car park. Current Size = " + logOfVehicleEvents.size());
+
         return false;
     }
 

@@ -118,17 +118,17 @@ public class PayStationClient extends JFrame {
 
                     LocalDateTime expiry = dateTime.plusHours((long)cost);
 
-                    System.out.println("Expiry Date" + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + expiry.getYear() + "." + "Time: " + expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
-
-
 
                     if (payStation.pay(txtReg.getText(),payDate, payTime,4)){
                         StringBuilder ticket = new StringBuilder();
-                        ticket.append("Car Reg: " + reg);
-                        ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year);
-                        ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec);
-                        ticket.append("Leave by: " + payDate.day + "/" + payDate.month + "/" + payDate.year);
+                        ticket.append("Car Reg: " + reg + "\n");
+                        ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year + " " );
+                        ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec + "\n");
+                        ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" +  expiry.getYear() + " ");
+                        ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
+                        System.out.println(ticket.toString());
                     }
+
                 }
             });
 
