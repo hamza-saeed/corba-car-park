@@ -42,7 +42,6 @@ public class LServerImpl extends LocalServerPOA {
 
     @Override
     public boolean vehicle_paid(VehicleEvent event) {
-        System.out.println("size of log: " + logOfVehicleEvents.size());
         logOfVehicleEvents.add(event);
         return true;
     }
@@ -63,16 +62,25 @@ public class LServerImpl extends LocalServerPOA {
 
         for (int i = 0; i < logOfVehicleEvents.size(); i++)
         {
-            if (logOfVehicleEvents.get(i).registration_number.equals(registration_number))
+            VehicleEvent currentEvent = logOfVehicleEvents.get(i);
+            if ((currentEvent.registration_number.equals(registration_number)) && ((currentEvent.event == EventType.Entered) || (currentEvent.event == EventType.Paid)))
             {
-                System.out.println("Vehicle in car park");
-                System.out.println("Current money today: £" + return_cash_total());
-                System.out.println("Number of tickets: " + listOfTickets.size());
                 return true;
             }
         }
-        System.out.println("Vehicle NOT in car park. Current Size = " + logOfVehicleEvents.size());
+        return false;
+    }
 
+    @Override
+    public boolean vehicle_already_paid(String registration_number) {
+        for (int i = 0; i < logOfVehicleEvents.size(); i++)
+        {
+            VehicleEvent currentEvent = logOfVehicleEvents.get(i);
+            if ((currentEvent.registration_number.equals(registration_number)) && (currentEvent.event == EventType.Paid))
+            {
+                return true;
+            }
+        }
         return false;
     }
 

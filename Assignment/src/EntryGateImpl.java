@@ -1,5 +1,7 @@
 import CarPark.*;
 
+import static CarPark.EventType.Entered;
+
 public class EntryGateImpl extends EntryGatePOA {
 
     LServerImpl lserver = new LServerImpl();
@@ -17,14 +19,20 @@ public class EntryGateImpl extends EntryGatePOA {
 
     @Override
     public void car_entered(String reg, Date date, Time time) {
-        String dateStr = Integer.toString(date.day) + "/" + Integer.toString(date.month) + "/" + Integer.toString(date.year);
-        VehicleEvent vehicleEvent = new VehicleEvent();
-        vehicleEvent.registration_number = reg;
-        vehicleEvent.date = date;
-        vehicleEvent.time = time;
-        System.out.println("Car Entered with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
+        if (!lserver.vehicle_in_car_park(reg)) {
+            String dateStr = Integer.toString(date.day) + "/" + Integer.toString(date.month) + "/" + Integer.toString(date.year);
+            VehicleEvent vehicleEvent = new VehicleEvent();
+            vehicleEvent.registration_number = reg;
+            vehicleEvent.date = date;
+            vehicleEvent.time = time;
+            vehicleEvent.event = Entered;
+            System.out.println("Car Entered with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
 
-        lserver.vehicle_in(vehicleEvent);
+            lserver.vehicle_in(vehicleEvent);
+        }
+        else {
+            System.out.println("Vehicle with registration '" + reg + "' is already in car park.");
+        }
     }
 
     @Override

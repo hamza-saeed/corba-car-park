@@ -125,7 +125,6 @@ public class PayStationClient extends JFrame {
                     expiryTime.sec = dateTime.getSecond();
 
 
-
                     if (payStation.pay(txtReg.getText(),payDate, payTime,4)){
                         StringBuilder ticket = new StringBuilder();
 //                        ticket.append("Car Reg: " + reg + "\n");

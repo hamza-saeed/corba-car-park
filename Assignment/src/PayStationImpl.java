@@ -33,7 +33,7 @@ public class PayStationImpl extends PayStationPOA {
     public boolean createTicket(Ticket newTicket) {
         if (lServer.add_Ticket(newTicket))
         {
-            System.out.println("Added Ticket :)");
+            System.out.println("Added Ticket");
             return true;
         }
         else
@@ -45,28 +45,35 @@ public class PayStationImpl extends PayStationPOA {
 
     @Override
     public boolean pay(String carReg, Date payDate, Time payTime, int duration) {
-        VehicleEvent paidEvent = new VehicleEvent();
-        paidEvent.registration_number = carReg;
-        paidEvent.time=payTime;
-        paidEvent.date=payDate;
-
-        if (lServer.vehicle_in_car_park(carReg)) {
-
-            //TODO: Check if Reg is in car park/duration etc.
-            if (lServer.vehicle_paid(paidEvent)) {
-                System.out.println("Car Reg:" + carReg + " paid.");
-                return true;
+        VehicleEvent payEvent = new VehicleEvent();
+        payEvent.registration_number = carReg;
+        payEvent.time=payTime;
+        payEvent.date=payDate;
+        payEvent.event = EventType.Paid;
+        if (!lServer.vehicle_already_paid(carReg)) {
+            if (lServer.vehicle_in_car_park(carReg)) {
+                //TODO: Check if Reg is in car park/duration etc.
+                if (lServer.vehicle_paid(payEvent)) {
+                    System.out.println("Car Reg:" + carReg + " paid.");
+                    return true;
+                } else {
+                    System.out.println("Payment failed");
+                    return false;
+                }
             } else {
-                System.out.println("Payment failed");
-                return false;
+                System.out.println("Vehicle is NOT in car park");
+            return false;
             }
+
         }
         else
         {
-            System.out.println("Car NOT in car park");
+            System.out.println("Ticket has already been paid.");
             return false;
+
         }
     }
+
 
 
     @Override
