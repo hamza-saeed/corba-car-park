@@ -10,6 +10,14 @@ public class PayStationImpl extends PayStationPOA {
     }
 
     @Override
+    public void registerPaystation(String machineName) {
+        Machine machine = new Machine();
+        machine.name = machineName;
+        machine.ior = "";
+        lServer.add_pay_station(machine);
+    }
+
+    @Override
     public void turn_on() {
 
     }

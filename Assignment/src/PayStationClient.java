@@ -48,6 +48,7 @@ public class PayStationClient extends JFrame {
     }
 
     public static void main(String[] args) {
+
         PayStationClient paystation = new PayStationClient();
 
         try {
@@ -77,6 +78,19 @@ public class PayStationClient extends JFrame {
 
             String name = "PayStationClient";
             PayStation payStation = PayStationHelper.narrow(nameService.resolve_str(name));
+
+
+            String paystationName = "newPaystation";
+            for (int i = 0; i < args.length; i++)
+            {
+                String param = args[i];
+                if (param.toLowerCase().equals("-name"))
+                {
+                    paystationName = args[i+1];
+                }
+            }
+            payStation.registerPaystation(paystationName);
+
             //TODO: Get Reg - check if they entered recently.
 
             //TODO: Show what time they need to leave.

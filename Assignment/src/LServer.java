@@ -1,7 +1,4 @@
-import CarPark.EntryGate;
-import CarPark.EntryGateHelper;
-import CarPark.PayStation;
-import CarPark.PayStationHelper;
+import CarPark.*;
 import org.omg.CORBA.*;
 import org.omg.CosNaming.*;
 import org.omg.PortableServer.POA;
@@ -10,7 +7,6 @@ import org.omg.PortableServer.POAHelper;
 public class LServer {
 
     static public void main(String[] args) {
-
 
    try {
        // Initialize the ORB
@@ -28,7 +24,10 @@ public class LServer {
 
 //       // Create the Count servant object
        PayStationImpl payStationImpl = new PayStationImpl();
-//
+
+
+
+       //
 //       // get object reference from the servant
        org.omg.CORBA.Object payRef = rootpoa.servant_to_reference(payStationImpl);
        PayStation payCRef = PayStationHelper.narrow(payRef);
@@ -60,6 +59,40 @@ public class LServer {
        String payN = "PayStationClient";
        NameComponent[] payName = nameService.to_name(payN);
        nameService.rebind(payName, payCRef);
+
+
+
+
+
+       org.omg.CORBA.Object nameServiceObj1  = orb.resolve_initial_references("NameService");
+
+           if (nameServiceObj1 == null) {
+               System.out.println("nameServiceObj1 = null");
+               return;
+           }
+
+           // Use NamingContextExt instead of NamingContext. This is
+           // part of the Interoperable naming Service.
+           NamingContextExt nameService1 = NamingContextExtHelper.narrow(nameServiceObj1);
+           if (nameService1 == null) {
+               System.out.println("nameService1 = null");
+               return;
+           }
+
+           String  name = "LocalServer";
+       LocalServer lServer = LocalServerHelper.narrow(nameService1.resolve_str(name));
+
+       String lServerName = "lServer";
+       for (int i = 0; i < args.length; i++)
+       {
+           String param = args[i];
+           if (param.toLowerCase().equals("-name"))
+           {
+               lServerName = args[i+1];
+           }
+       }
+       lServer.registerLocalServer(lServerName);
+
 
        //  wait for invocations from clients
        orb.run();

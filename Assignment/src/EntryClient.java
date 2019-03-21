@@ -66,6 +66,17 @@ public class EntryClient extends JFrame {
         String  name = "EntryClient";
         EntryGate entry = EntryGateHelper.narrow(nameService.resolve_str(name));
 
+            String gateName = "newGate";
+            for (int i = 0; i < args.length; i++)
+            {
+                String param = args[i];
+                if (param.toLowerCase().equals("-name"))
+                {
+                    gateName = args[i+1];
+                }
+            }
+            entry.registerGate(gateName);
+
             btnAddReg.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

@@ -5,14 +5,23 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class LServerImpl extends LocalServerPOA {
+
+    HQImpl hqimp = new HQImpl();
     public static ArrayList<VehicleEvent> logOfVehicleEvents;
     public static ArrayList<Ticket> listOfTickets;
+    public static ArrayList<Machine> listOfEntryGates;
+    public static ArrayList<Machine> listOfExitGates;
+    public static ArrayList<Machine> listOfPayStations;
+
 
 
     public LServerImpl()
     {
         logOfVehicleEvents = new ArrayList<VehicleEvent>();
         listOfTickets = new ArrayList<Ticket>();
+        listOfEntryGates = new ArrayList<Machine>();
+        listOfExitGates = new ArrayList<Machine>();
+        listOfPayStations = new ArrayList<Machine>();
     }
 
     @Override
@@ -23,6 +32,14 @@ public class LServerImpl extends LocalServerPOA {
     @Override
     public VehicleEvent[] log() {
         return (VehicleEvent[])logOfVehicleEvents.toArray();
+    }
+
+    @Override
+    public void registerLocalServer(String machineName) {
+        Machine machine = new Machine();
+        machine.name = machineName;
+        machine.ior = "";
+        hqimp.register_local_server(machine);
     }
 
 
@@ -100,17 +117,22 @@ public class LServerImpl extends LocalServerPOA {
     }
 
     @Override
-    public void add_entry_gate(String gate_name, String gate_ior) {
+    public void add_entry_gate(Machine machine) {
+        listOfEntryGates.add(machine);
+        System.out.println("Added entry gate:" + machine.name);
+    }
+
+    @Override
+    public void add_exit_gate(Machine machine) {
+        listOfExitGates.add(machine);
+        System.out.println("Added exit gate:" + machine.name);
 
     }
 
     @Override
-    public void add_exit_gate(String gate_name, String gate_ior) {
-
-    }
-
-    @Override
-    public void add_pay_station(String station_name, String station_ior) {
+    public void add_pay_station(Machine machine) {
+        listOfPayStations.add(machine);
+        System.out.println("Added pay station:" + machine.name);
 
     }
 }
