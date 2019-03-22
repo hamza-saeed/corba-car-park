@@ -10,11 +10,12 @@ public class PayStationImpl extends PayStationPOA {
     }
 
     @Override
-    public void registerPaystation(String machineName) {
+    public void registerPaystation(String machineName, String iorVal) {
         Machine machine = new Machine();
         machine.name = machineName;
-        machine.ior = "";
+        machine.ior = iorVal;
         lServer.add_pay_station(machine);
+        System.out.println("Added: " + machineName + " with ior" + iorVal);
     }
 
     @Override
@@ -72,13 +73,11 @@ public class PayStationImpl extends PayStationPOA {
                 System.out.println("Vehicle is NOT in car park");
             return false;
             }
-
         }
         else
         {
             System.out.println("Ticket has already been paid.");
             return false;
-
         }
     }
 

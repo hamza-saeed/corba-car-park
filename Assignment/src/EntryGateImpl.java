@@ -13,11 +13,13 @@ public class EntryGateImpl extends EntryGatePOA {
     }
 
     @Override
-    public void registerGate(String machineName) {
+    public void registerGate(String machineName, String iorVal) {
         Machine machine = new Machine();
         machine.name = machineName;
-        machine.ior = "";
+        machine.ior = iorVal;
         lserver.add_entry_gate(machine);
+        System.out.println("Added: " + machineName + " with ior" + iorVal);
+
     }
 
     @Override

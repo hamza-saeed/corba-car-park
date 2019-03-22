@@ -91,7 +91,23 @@ public class LServer {
                lServerName = args[i+1];
            }
        }
-       lServer.registerLocalServer(lServerName);
+
+       // get reference to rootpoa & activate the POAManager
+       rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+       rootpoa.the_POAManager().activate();
+
+
+       // create servant and register it with the ORB
+       LServerImpl lServerImp = new LServerImpl();
+
+       // Get the 'stringified IOR'
+       org.omg.CORBA.Object ref = rootpoa.servant_to_reference(lServerImp);
+       String stringified_ior =
+               orb.object_to_string(ref);
+
+
+
+       lServer.registerLocalServer(lServerName, stringified_ior);
 
 
        //  wait for invocations from clients
@@ -100,5 +116,19 @@ public class LServer {
    } catch (Exception e) {
     e.printStackTrace();
    }
+   }
+
+
+   public String getArgs(String[] args, String var)
+   {
+       for (int i = 0; i < args.length; i++)
+       {
+           String param = args[i];
+           if (param.toLowerCase().equals(var))
+           {
+               return args[i+1];
+           }
+       }
+       return "Unnamed";
    }
 }

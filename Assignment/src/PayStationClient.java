@@ -2,6 +2,8 @@ import CarPark.*;
 import org.omg.CORBA.ORB;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAHelper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -89,7 +91,24 @@ public class PayStationClient extends JFrame {
                     paystationName = args[i+1];
                 }
             }
-            payStation.registerPaystation(paystationName);
+
+
+            // get reference to rootpoa & activate the POAManager
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
+
+
+            // create servant and register it with the ORB
+            PayStationImpl payStationImpl = new PayStationImpl();
+
+            // Get the 'stringified IOR'
+            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(payStationImpl);
+            String stringified_ior =
+                    orb.object_to_string(ref);
+
+
+
+            payStation.registerPaystation(paystationName, stringified_ior);
 
             //TODO: Get Reg - check if they entered recently.
 

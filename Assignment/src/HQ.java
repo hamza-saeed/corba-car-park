@@ -7,24 +7,33 @@ import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class HQ extends JFrame {
-
+    static JTable table;
+    static DefaultTableModel dtm;
+    static JButton btnUpdate;
     public HQ()
     {
         JFrame frame = new JFrame("HEADQUARTERS");
         JPanel panel = new JPanel();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400,300);
+        frame.setSize(800,500);
         JLabel lbl1 = new JLabel("HQ");
-        JButton btnAddReg = new JButton("Press");
-
+        btnUpdate = new JButton("Update");
+        dtm = new DefaultTableModel();
+        dtm.addColumn("LocalServer");
+        dtm.addColumn("Enabled");
+        table = new JTable(dtm);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setBounds(30,40,200,300);
         panel.add(lbl1);
-        panel.add(btnAddReg); // Adds Button to content pane of frame
-
+        panel.add(scrollPane);
+        panel.add(btnUpdate);
         frame.add(panel);
         frame.setVisible(true);
-
     }
 
     public static void main(String[] args) {
@@ -68,7 +77,20 @@ public class HQ extends JFrame {
             nameService.rebind(lServerNames, lServerCref);
 //
 
+            btnUpdate.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (HQImpl.listOfLocalServers != null) {
+                        dtm.setNumRows(0);
+                        for (Machine a : HQImpl.listOfLocalServers) {
+                            dtm.addRow(new String[]{a.name, "Yes"});
+                        }
+                    }
+                }
+            });
+
             orb.run();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

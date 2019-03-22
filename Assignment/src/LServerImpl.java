@@ -35,11 +35,13 @@ public class LServerImpl extends LocalServerPOA {
     }
 
     @Override
-    public void registerLocalServer(String machineName) {
+    public void registerLocalServer(String machineName, String iorVal) {
         Machine machine = new Machine();
         machine.name = machineName;
-        machine.ior = "";
+        machine.ior = iorVal;
         hqimp.register_local_server(machine);
+        System.out.println("Added: " + machineName + " with ior" + iorVal);
+
     }
 
 
