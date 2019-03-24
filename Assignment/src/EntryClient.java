@@ -65,18 +65,9 @@ public class EntryClient extends JFrame {
             return;
         }
 
-        String  name = "EntryClient";
-        EntryGate entry = EntryGateHelper.narrow(nameService.resolve_str(name));
+        String gateName = getArgs(args,"-Name");
 
-            String gateName = "newGate";
-            for (int i = 0; i < args.length; i++)
-            {
-                String param = args[i];
-                if (param.toLowerCase().equals("-name"))
-                {
-                    gateName = args[i+1];
-                }
-            }
+        EntryGate entry = EntryGateHelper.narrow(nameService.resolve_str(gateName));
 
             // get reference to rootpoa & activate the POAManager
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
@@ -118,5 +109,14 @@ public class EntryClient extends JFrame {
         }
     }
 
+    public static String getArgs(String[] args, String var) {
+        for (int i = 0; i < args.length; i++) {
+            String param = args[i];
+            if (param.toLowerCase().equals(var.toLowerCase())) {
+                return args[i + 1];
+            }
+        }
+        return "Unnamed";
+    }
 
 }

@@ -37,6 +37,13 @@ module CarPark {
         string ior;
     };
 
+        typedef sequence<VehicleEvent> Log_of_vehicle_events;
+        typedef sequence<Ticket> Log_of_tickets;
+        typedef sequence<Machine> List_of_entryGates;
+        typedef sequence<Machine> List_of_exitGates;
+        typedef sequence<Machine> List_of_payStations;
+
+
     interface EntryGate {
 
         readonly attribute string machine_name;
@@ -62,18 +69,15 @@ module CarPark {
      interface  HQServer {
         void raise_alarm(in VehicleEvent event);
         void register_local_server(in Machine machine);
+        List_of_entryGates returnEntryGates();
      };
 
-    typedef sequence<VehicleEvent> Log_of_vehicle_events;
-    typedef sequence<Ticket> Log_of_tickets;
-    typedef sequence<Ticket> List_of_entryGates;
-    typedef sequence<Ticket> List_of_exitGates;
-    typedef sequence<Ticket> List_of_payStations;
 
 
     interface  LocalServer {
         readonly attribute string location;
         readonly attribute Log_of_vehicle_events log;
+        readonly attribute List_of_entryGates logOfEntryGates;
         void registerLocalServer(in string machineName, in string ior);
         void vehicle_in(in VehicleEvent event);
         void vehicle_out(in VehicleEvent event);

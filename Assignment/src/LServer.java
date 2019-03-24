@@ -8,127 +8,134 @@ public class LServer {
 
     static public void main(String[] args) {
 
-   try {
-       // Initialize the ORB
-       ORB orb = ORB.init(args, null);
-       // get reference to rootpoa & activate the POAManager
-       POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-       rootpoa.the_POAManager().activate();
+        try {
+            // Initialize the ORB
+            ORB orb = ORB.init(args, null);
+            // get reference to rootpoa & activate the POAManager
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
 
-       // Create the Count servant object
-       EntryGateImpl entryImpl = new EntryGateImpl();
+            // Get a reference to the Naming service
+            org.omg.CORBA.Object nameServiceObj =
+                    orb.resolve_initial_references("NameService");
+            if (nameServiceObj == null) {
+                System.out.println("nameServiceObj = null");
+                return;
+            }
 
-       // get object reference from the servant
-       org.omg.CORBA.Object entryRef = rootpoa.servant_to_reference(entryImpl);
-       EntryGate entryCref = EntryGateHelper.narrow(entryRef);
+            // Use NamingContextExt which is part of the Interoperable
+            // Naming Service (INS) specification.
+            NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
+            if (nameService == null) {
+                System.out.println("nameService = null");
+                return;
+            }
 
-//       // Create the Count servant object
-       PayStationImpl payStationImpl = new PayStationImpl();
+            // Create the Entry servant object
+            EntryGateImpl entryImpl = new EntryGateImpl();
+            // get object reference from the servant
+            org.omg.CORBA.Object entryRef = rootpoa.servant_to_reference(entryImpl);
+            EntryGate entryCref = EntryGateHelper.narrow(entryRef);
 
+            // Create the Paystation servant object
+            PayStationImpl payStationImpl = new PayStationImpl();
+            // get object reference from the servant
+            org.omg.CORBA.Object payRef = rootpoa.servant_to_reference(payStationImpl);
+            PayStation payCRef = PayStationHelper.narrow(payRef);
 
+            // Create the Exit servant object - TODO: UNCOMMENT WHEN EXIT GATE IS IMPLEMENTED
+//            ExitGateImpl exitGateImpl = new ExitGateImpl();
+//            // get object reference from the servant
+//            org.omg.CORBA.Object exitRef = rootpoa.servant_to_reference(exitGateImpl);
+//            PayStation exitCRef = PayStationHelper.narrow(exitRef);
 
-       //
-//       // get object reference from the servant
-       org.omg.CORBA.Object payRef = rootpoa.servant_to_reference(payStationImpl);
-       PayStation payCRef = PayStationHelper.narrow(payRef);
+            //get arguments
+            String lServerName = getArgs(args, "-Name");
+            String[] entryGates = getArgs(args, "-EntryGates").split(",");
+            String[] payStations = getArgs(args, "-PayStations").split(",");
+            String[] exitGates = getArgs(args, "-ExitGates").split(",");
 
-
-       // Get a reference to the Naming service
-       org.omg.CORBA.Object nameServiceObj =
-               orb.resolve_initial_references("NameService");
-       if (nameServiceObj == null) {
-           System.out.println("nameServiceObj = null");
-           return;
-       }
-
-       // Use NamingContextExt which is part of the Interoperable
-       // Naming Service (INS) specification.
-       NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
-       if (nameService == null) {
-           System.out.println("nameService = null");
-           return;
-       }
-
-       // bind the Count object in the Naming service
-       String entryN = "EntryClient";
-       NameComponent[] entryName = nameService.to_name(entryN);
-       nameService.rebind(entryName, entryCref);
-//
-
-       // bind the Count object in the Naming service
-       String payN = "PayStationClient";
-       NameComponent[] payName = nameService.to_name(payN);
-       nameService.rebind(payName, payCRef);
-
-
-
-
-
-       org.omg.CORBA.Object nameServiceObj1  = orb.resolve_initial_references("NameService");
-
-           if (nameServiceObj1 == null) {
-               System.out.println("nameServiceObj1 = null");
-               return;
-           }
-
-           // Use NamingContextExt instead of NamingContext. This is
-           // part of the Interoperable naming Service.
-           NamingContextExt nameService1 = NamingContextExtHelper.narrow(nameServiceObj1);
-           if (nameService1 == null) {
-               System.out.println("nameService1 = null");
-               return;
-           }
-
-           String  name = "LocalServer";
-       LocalServer lServer = LocalServerHelper.narrow(nameService1.resolve_str(name));
-
-       String lServerName = "lServer";
-       for (int i = 0; i < args.length; i++)
-       {
-           String param = args[i];
-           if (param.toLowerCase().equals("-name"))
-           {
-               lServerName = args[i+1];
-           }
-       }
-
-       // get reference to rootpoa & activate the POAManager
-       rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-       rootpoa.the_POAManager().activate();
+            // bind the entry object sin the Naming service
+            for (String entryNameStr : entryGates)
+            {
+                System.out.println("binding entry: " + entryNameStr);
+                NameComponent[] entryName = nameService.to_name(entryNameStr);
+                nameService.rebind(entryName, entryCref);
+            }
+            // bind the paystation objects in the Naming service
+            for (String payStationNameStr : payStations)
+            {
+                System.out.println("binding pay: " + payStationNameStr);
+                NameComponent[] payStationName = nameService.to_name(payStationNameStr);
+                nameService.rebind(payStationName, payCRef);
+            }
+//            // bind the exitgate objects in the Naming service
+//            //TODO: UNCOMMENT WHEN EXIT GATE IS IMPLEMENTED
+//            for (String exitNameStr : exitGates)
+//            {
+//                NameComponent[] exitName = nameService.to_name(exitNameStr);
+//                nameService.rebind(exitName, exitCRef);
+//            }
 
 
-       // create servant and register it with the ORB
-       LServerImpl lServerImp = new LServerImpl();
-
-       // Get the 'stringified IOR'
-       org.omg.CORBA.Object ref = rootpoa.servant_to_reference(lServerImp);
-       String stringified_ior =
-               orb.object_to_string(ref);
-
+            HQImpl hqImpl = new HQImpl();
+            // get object reference from the servant
+            org.omg.CORBA.Object hqRef = rootpoa.servant_to_reference(hqImpl);
+            HQServer hqCRef = HQServerHelper.narrow(hqRef);
+            NameComponent[] hqName = nameService.to_name("qwerty");
+            nameService.rebind(hqName, hqCRef);
 
 
-       lServer.registerLocalServer(lServerName, stringified_ior);
+            org.omg.CORBA.Object nameServiceObj1 = orb.resolve_initial_references("NameService");
+
+            if (nameServiceObj1 == null) {
+                System.out.println("nameServiceObj1 = null");
+                return;
+            }
+
+            // Use NamingContextExt instead of NamingContext. This is
+            // part of the Interoperable naming Service.
+            NamingContextExt nameService1 = NamingContextExtHelper.narrow(nameServiceObj1);
+            if (nameService1 == null) {
+                System.out.println("nameService1 = null");
+                return;
+            }
+
+            LocalServer lServer = LocalServerHelper.narrow(nameService1.resolve_str(lServerName));
+
+            // get reference to rootpoa & activate the POAManager
+            rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
 
 
-       //  wait for invocations from clients
-       orb.run();
+            // create servant and register it with the ORB
+            LServerImpl lServerImp = new LServerImpl();
 
-   } catch (Exception e) {
-    e.printStackTrace();
-   }
-   }
+            // Get the 'stringified IOR'
+            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(lServerImp);
+            String stringified_ior =
+                    orb.object_to_string(ref);
+
+            lServer.registerLocalServer(lServerName, stringified_ior);
 
 
-   public String getArgs(String[] args, String var)
-   {
-       for (int i = 0; i < args.length; i++)
-       {
-           String param = args[i];
-           if (param.toLowerCase().equals(var))
-           {
-               return args[i+1];
-           }
-       }
-       return "Unnamed";
-   }
+            //  wait for invocations from clients
+            orb.run();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static String getArgs(String[] args, String var) {
+        for (int i = 0; i < args.length; i++) {
+            String param = args[i];
+            if (param.toLowerCase().equals(var.toLowerCase())) {
+                return args[i + 1];
+            }
+        }
+        return "Unnamed";
+    }
+
 }

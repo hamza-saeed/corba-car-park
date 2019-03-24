@@ -7,6 +7,8 @@ import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,9 +54,6 @@ public class HQ extends JFrame {
             org.omg.CORBA.Object lServerRef = rootpoa.servant_to_reference(lServerImpl);
             LocalServer lServerCref = LocalServerHelper.narrow(lServerRef);
 
-
-
-
             // Get a reference to the Naming service
             org.omg.CORBA.Object nameServiceObj =
                     orb.resolve_initial_references("NameService");
@@ -71,11 +70,14 @@ public class HQ extends JFrame {
                 return;
             }
 
-            // bind the Count object in the Naming service
-            String localServerName = "LocalServer";
-            NameComponent[] lServerNames = nameService.to_name(localServerName);
-            nameService.rebind(lServerNames, lServerCref);
-//
+            String[] localServers = getArgs(args, "-LocalServers").split(",");
+
+            for (String localServerNameStr : localServers)
+            {
+                System.out.println("binding lserver: " + localServerNameStr);
+                NameComponent[] lServerNames = nameService.to_name(localServerNameStr);
+                nameService.rebind(lServerNames, lServerCref);
+            }
 
             btnUpdate.addActionListener(new ActionListener() {
                 @Override
@@ -89,6 +91,67 @@ public class HQ extends JFrame {
                 }
             });
 
+            ListSelectionModel cellSelectionModel = table.getSelectionModel();
+            cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            cellSelectionModel.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+
+                    try {
+                    if (e.getValueIsAdjusting()) {
+                        // Get a reference to the Naming service
+                        org.omg.CORBA.Object nameServiceObj1 =
+                                null;
+
+                        nameServiceObj1 = orb.resolve_initial_references("NameService");
+
+                        if (nameServiceObj1 == null) {
+                            System.out.println("nameServiceObj = null");
+                            return;
+                        }
+
+                        // Use NamingContextExt instead of NamingContext. This is
+                        // part of the Interoperable naming Service.
+                        NamingContextExt nameService1 = NamingContextExtHelper.narrow(nameServiceObj1);
+                        if (nameService1 == null) {
+                            System.out.println("nameService = null");
+                            return;
+                        }
+
+
+                        HQServer headquarters = HQServerHelper.narrow(nameService1.resolve_str( "qwerty"));
+                        // get reference to rootpoa & activate the POAManager
+                        POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+                        rootpoa.the_POAManager().activate();
+
+                        //HQImpl.listOfLocalServers.get(table.getSelectedRow());
+                        System.out.println("List of entry gates:");
+
+
+
+                        for (Machine entryG : headquarters.returnEntryGates()) {
+                            System.out.println(entryG.name);
+                        }
+                        System.out.println("List of paystations:");
+
+                        for (Machine pay : LServerImpl.listOfPayStations) {
+                            System.out.println(pay.name);
+                        }
+                        System.out.println("List of exit gates:");
+
+                        for (Machine exit : LServerImpl.listOfExitGates) {
+                            System.out.println(exit.name);
+                        }
+                    }
+                    } catch (Exception changeError)
+                    {
+                        changeError.printStackTrace();
+                    }
+
+                }
+            });
+
+
             orb.run();
 
         } catch (Exception e) {
@@ -96,9 +159,13 @@ public class HQ extends JFrame {
         }
     }
 
-
-
-
-
-
+    public static String getArgs(String[] args, String var) {
+        for (int i = 0; i < args.length; i++) {
+            String param = args[i];
+            if (param.toLowerCase().equals(var.toLowerCase())) {
+                return args[i + 1];
+            }
+        }
+        return "Unnamed";
+    }
 }

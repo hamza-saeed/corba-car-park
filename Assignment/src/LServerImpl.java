@@ -7,21 +7,19 @@ import java.util.ArrayList;
 public class LServerImpl extends LocalServerPOA {
 
     HQImpl hqimp = new HQImpl();
-    public static ArrayList<VehicleEvent> logOfVehicleEvents;
-    public static ArrayList<Ticket> listOfTickets;
-    public static ArrayList<Machine> listOfEntryGates;
-    public static ArrayList<Machine> listOfExitGates;
-    public static ArrayList<Machine> listOfPayStations;
-
-
+    public static ArrayList<VehicleEvent> logOfVehicleEvents = new ArrayList<VehicleEvent>();
+    public static ArrayList<Ticket> listOfTickets = new ArrayList<Ticket>();
+    public static ArrayList<Machine> listOfEntryGates = new ArrayList<Machine>();
+    public static ArrayList<Machine> listOfExitGates = new ArrayList<Machine>();
+    public static ArrayList<Machine> listOfPayStations = new ArrayList<Machine>();
 
     public LServerImpl()
     {
-        logOfVehicleEvents = new ArrayList<VehicleEvent>();
-        listOfTickets = new ArrayList<Ticket>();
-        listOfEntryGates = new ArrayList<Machine>();
-        listOfExitGates = new ArrayList<Machine>();
-        listOfPayStations = new ArrayList<Machine>();
+//        logOfVehicleEvents = new ArrayList<VehicleEvent>();
+//        listOfTickets = new ArrayList<Ticket>();
+//        listOfEntryGates = new ArrayList<Machine>();
+//        listOfExitGates = new ArrayList<Machine>();
+//        listOfPayStations = new ArrayList<Machine>();
     }
 
     @Override
@@ -32,6 +30,11 @@ public class LServerImpl extends LocalServerPOA {
     @Override
     public VehicleEvent[] log() {
         return (VehicleEvent[])logOfVehicleEvents.toArray();
+    }
+
+    @Override
+    public Machine[] logOfEntryGates() {
+        return (Machine[])listOfEntryGates.toArray();
     }
 
     @Override

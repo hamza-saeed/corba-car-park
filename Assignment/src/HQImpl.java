@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class HQImpl extends HQServerPOA {
 
+
     public static ArrayList<Machine> listOfLocalServers;
 
     public HQImpl()
@@ -23,5 +24,12 @@ public class HQImpl extends HQServerPOA {
     public void register_local_server(Machine machine) {
         System.out.println(machine.name);
         listOfLocalServers.add(machine);
+    }
+
+    @Override
+    public Machine[] returnEntryGates() {
+        Machine[] entryGates = new Machine[LServerImpl.listOfEntryGates.size()];
+        LServerImpl.listOfEntryGates.toArray(entryGates);
+        return entryGates;
     }
 }

@@ -78,20 +78,8 @@ public class PayStationClient extends JFrame {
                 return;
             }
 
-            String name = "PayStationClient";
-            PayStation payStation = PayStationHelper.narrow(nameService.resolve_str(name));
-
-
-            String paystationName = "newPaystation";
-            for (int i = 0; i < args.length; i++)
-            {
-                String param = args[i];
-                if (param.toLowerCase().equals("-name"))
-                {
-                    paystationName = args[i+1];
-                }
-            }
-
+            String paystationName = getArgs(args, "-Name");
+            PayStation payStation = PayStationHelper.narrow(nameService.resolve_str(paystationName));
 
             // get reference to rootpoa & activate the POAManager
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
@@ -105,8 +93,6 @@ public class PayStationClient extends JFrame {
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(payStationImpl);
             String stringified_ior =
                     orb.object_to_string(ref);
-
-
 
             payStation.registerPaystation(paystationName, stringified_ior);
 
@@ -191,5 +177,15 @@ public class PayStationClient extends JFrame {
         {
             exc.printStackTrace();
         }
+    }
+
+    public static String getArgs(String[] args, String var) {
+        for (int i = 0; i < args.length; i++) {
+            String param = args[i];
+            if (param.toLowerCase().equals(var.toLowerCase())) {
+                return args[i + 1];
+            }
+        }
+        return "Unnamed";
     }
 }
