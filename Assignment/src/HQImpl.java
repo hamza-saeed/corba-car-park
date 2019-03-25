@@ -32,4 +32,18 @@ public class HQImpl extends HQServerPOA {
         LServerImpl.listOfEntryGates.toArray(entryGates);
         return entryGates;
     }
+
+    @Override
+    public Machine[] returnPayStations() {
+        Machine[] payStations = new Machine[LServerImpl.listOfPayStations.size()];
+        LServerImpl.listOfPayStations.toArray(payStations);
+        return payStations;
+    }
+
+    @Override
+    public Machine[] returnExitGates() {
+        Machine[] exitGates = new Machine[LServerImpl.listOfExitGates.size()];
+        LServerImpl.listOfExitGates.toArray(exitGates);
+        return exitGates;
+    }
 }

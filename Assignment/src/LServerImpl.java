@@ -33,9 +33,20 @@ public class LServerImpl extends LocalServerPOA {
     }
 
     @Override
-    public Machine[] logOfEntryGates() {
-        return (Machine[])listOfEntryGates.toArray();
+    public Machine[] listOfEntryGates() {
+        return new Machine[0];
     }
+
+    @Override
+    public Machine[] listOfPayStations() {
+        return new Machine[0];
+    }
+
+    @Override
+    public Machine[] listOfExitGates() {
+        return new Machine[0];
+    }
+
 
     @Override
     public void registerLocalServer(String machineName, String iorVal) {
@@ -52,7 +63,6 @@ public class LServerImpl extends LocalServerPOA {
     public void vehicle_in(VehicleEvent event) {
 
         logOfVehicleEvents.add(event);
-
         System.out.println("Size after addition: " + logOfVehicleEvents.size());
     }
 

@@ -70,6 +70,9 @@ module CarPark {
         void raise_alarm(in VehicleEvent event);
         void register_local_server(in Machine machine);
         List_of_entryGates returnEntryGates();
+        List_of_payStations returnPayStations();
+        List_of_exitGates returnExitGates();
+
      };
 
 
@@ -77,7 +80,9 @@ module CarPark {
     interface  LocalServer {
         readonly attribute string location;
         readonly attribute Log_of_vehicle_events log;
-        readonly attribute List_of_entryGates logOfEntryGates;
+        readonly attribute List_of_entryGates listOfEntryGates;
+        readonly attribute List_of_payStations listOfPayStations;
+        readonly attribute List_of_exitGates listOfExitGates;
         void registerLocalServer(in string machineName, in string ior);
         void vehicle_in(in VehicleEvent event);
         void vehicle_out(in VehicleEvent event);

@@ -43,11 +43,11 @@ public class LServer {
             org.omg.CORBA.Object payRef = rootpoa.servant_to_reference(payStationImpl);
             PayStation payCRef = PayStationHelper.narrow(payRef);
 
-            // Create the Exit servant object - TODO: UNCOMMENT WHEN EXIT GATE IS IMPLEMENTED
-//            ExitGateImpl exitGateImpl = new ExitGateImpl();
-//            // get object reference from the servant
-//            org.omg.CORBA.Object exitRef = rootpoa.servant_to_reference(exitGateImpl);
-//            PayStation exitCRef = PayStationHelper.narrow(exitRef);
+            // Create the Exit servant object
+            ExitGateImpl exitGateImpl = new ExitGateImpl();
+            // get object reference from the servant
+            org.omg.CORBA.Object exitRef = rootpoa.servant_to_reference(exitGateImpl);
+            ExitGate exitCRef = ExitGateHelper.narrow(exitRef);
 
             //get arguments
             String lServerName = getArgs(args, "-Name");
@@ -69,13 +69,12 @@ public class LServer {
                 NameComponent[] payStationName = nameService.to_name(payStationNameStr);
                 nameService.rebind(payStationName, payCRef);
             }
-//            // bind the exitgate objects in the Naming service
-//            //TODO: UNCOMMENT WHEN EXIT GATE IS IMPLEMENTED
-//            for (String exitNameStr : exitGates)
-//            {
-//                NameComponent[] exitName = nameService.to_name(exitNameStr);
-//                nameService.rebind(exitName, exitCRef);
-//            }
+            // bind the exitgate objects in the Naming service
+            for (String exitNameStr : exitGates)
+            {
+                NameComponent[] exitName = nameService.to_name(exitNameStr);
+                nameService.rebind(exitName, exitCRef);
+            }
 
 
             HQImpl hqImpl = new HQImpl();

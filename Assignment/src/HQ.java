@@ -79,6 +79,7 @@ public class HQ extends JFrame {
                 nameService.rebind(lServerNames, lServerCref);
             }
 
+
             btnUpdate.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -120,26 +121,27 @@ public class HQ extends JFrame {
 
 
                         HQServer headquarters = HQServerHelper.narrow(nameService1.resolve_str( "qwerty"));
-                        // get reference to rootpoa & activate the POAManager
-                        POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-                        rootpoa.the_POAManager().activate();
+
 
                         //HQImpl.listOfLocalServers.get(table.getSelectedRow());
                         System.out.println("List of entry gates:");
 
-
-
-                        for (Machine entryG : headquarters.returnEntryGates()) {
-                            System.out.println(entryG.name);
+                        for (Machine entryG : headquarters.returnEntryGates())
+//                        for (Machine entryG : lServerCref.logOfEntryGates())
+                        {
+                            dtm.addRow(new String[] {"ENTRY GATE: " + entryG.name});
+                                System.out.println(entryG.name);
                         }
                         System.out.println("List of paystations:");
 
-                        for (Machine pay : LServerImpl.listOfPayStations) {
+                        for (Machine pay : headquarters.returnPayStations()) {
+                            dtm.addRow(new String[] {"ENTRY GATE: " + pay.name});
                             System.out.println(pay.name);
                         }
                         System.out.println("List of exit gates:");
 
-                        for (Machine exit : LServerImpl.listOfExitGates) {
+                        for (Machine exit : headquarters.returnExitGates()) {
+                            dtm.addRow(new String[] {"ENTRY GATE: " + exit.name});
                             System.out.println(exit.name);
                         }
                     }
