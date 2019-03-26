@@ -15,11 +15,11 @@ import java.util.Date;
 
 public class ExitClient extends JFrame {
 
+    static ExitGateImpl exitImpl = new ExitGateImpl();
     static JButton btnAddReg;
     static JTextField txtReg;
 
     public ExitClient(){
-
         JFrame frame = new JFrame("Exit Client");
         JPanel panel = new JPanel();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -72,10 +72,6 @@ public class ExitClient extends JFrame {
             // get reference to rootpoa & activate the POAManager
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             rootpoa.the_POAManager().activate();
-
-
-            // create servant and register it with the ORB
-            ExitGateImpl exitImpl = new ExitGateImpl();
 
             // Get the 'stringified IOR'
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(exitImpl);

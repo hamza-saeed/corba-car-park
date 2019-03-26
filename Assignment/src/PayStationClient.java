@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 
 public class PayStationClient extends JFrame {
 
+    static PayStationImpl payStationImpl = new PayStationImpl();
     static JButton btnAddReg;
     static JTextField txtReg;
     static JTextField txtHrs;

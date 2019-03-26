@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 public class LServerImpl extends LocalServerPOA {
 
-    HQImpl hqimp = new HQImpl();
     public static ArrayList<VehicleEvent> logOfVehicleEvents = new ArrayList<VehicleEvent>();
     public static ArrayList<Ticket> listOfTickets = new ArrayList<Ticket>();
     public static ArrayList<Machine> listOfEntryGates = new ArrayList<Machine>();
@@ -54,7 +53,7 @@ public class LServerImpl extends LocalServerPOA {
         machine.name = machineName;
         machine.ior = iorVal;
         machine.enabled = true;
-        hqimp.register_local_server(machine);
+        HQ.hqimp.register_local_server(machine);
         System.out.println("Added: " + machineName + " with ior" + iorVal);
 
     }

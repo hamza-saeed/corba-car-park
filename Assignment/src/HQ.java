@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class HQ extends JFrame {
+
+    static HQImpl hqimp = new HQImpl();
     static JTable tableServers;
     static DefaultTableModel dtmServers;
     static JButton btnUpdate;
@@ -51,26 +53,23 @@ public class HQ extends JFrame {
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             rootpoa.the_POAManager().activate();
 
-            // Create the Count servant object
-            LServerImpl lServerImpl = new LServerImpl();
-
             // get object reference from the servant
-            org.omg.CORBA.Object lServerRef = rootpoa.servant_to_reference(lServerImpl);
+            org.omg.CORBA.Object lServerRef = rootpoa.servant_to_reference(LServer.lserver);
             LocalServer lServerCref = LocalServerHelper.narrow(lServerRef);
 
             // Get a reference to the Naming service
-            org.omg.CORBA.Object nameServiceObj =
+            org.omg.CORBA.Object nameServiceObjClient =
                     orb.resolve_initial_references("NameService");
-            if (nameServiceObj == null) {
-                System.out.println("nameServiceObj = null");
+            if (nameServiceObjClient == null) {
+                System.out.println("nameServiceObjClient = null");
                 return;
             }
 
             // Use NamingContextExt which is part of the Interoperable
             // Naming Service (INS) specification.
-            NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
-            if (nameService == null) {
-                System.out.println("nameService = null");
+            NamingContextExt nameServiceClient = NamingContextExtHelper.narrow(nameServiceObjClient);
+            if (nameServiceClient == null) {
+                System.out.println("nameServiceClient = null");
                 return;
             }
 
@@ -79,33 +78,27 @@ public class HQ extends JFrame {
             for (String localServerNameStr : localServers)
             {
                 System.out.println("binding lserver: " + localServerNameStr);
-                NameComponent[] lServerNames = nameService.to_name(localServerNameStr);
-                nameService.rebind(lServerNames, lServerCref);
+                NameComponent[] lServerNames = nameServiceClient.to_name(localServerNameStr);
+                nameServiceClient.rebind(lServerNames, lServerCref);
             }
 
             //Code to connect to local server
 
             // Get a reference to the Naming service
-            org.omg.CORBA.Object nameServiceObj1 =
-                    null;
+            org.omg.CORBA.Object nameServiceObjServers = orb.resolve_initial_references("NameService");
 
-            nameServiceObj1 = orb.resolve_initial_references("NameService");
-
-            if (nameServiceObj1 == null) {
-                System.out.println("nameServiceObj = null");
+            if (nameServiceObjServers == null) {
+                System.out.println("nameServiceObjServers = null");
                 return;
             }
 
             // Use NamingContextExt instead of NamingContext. This is
             // part of the Interoperable naming Service.
-            NamingContextExt nameService1 = NamingContextExtHelper.narrow(nameServiceObj1);
-            if (nameService1 == null) {
-                System.out.println("nameService = null");
+            NamingContextExt nameServiceServers = NamingContextExtHelper.narrow(nameServiceObjServers);
+            if (nameServiceServers == null) {
+                System.out.println("nameServiceServers = null");
                 return;
             }
-
-
-
 
             btnUpdate.addActionListener(new ActionListener() {
                 @Override
@@ -125,8 +118,10 @@ public class HQ extends JFrame {
                     String name = tableServers.getValueAt(tableServers.getSelectedRow(), 0).toString();
                     try {
 
-                        EntryGate entry = EntryGateHelper.narrow(nameService1.resolve_str(name + "qwertyy"));
-                        entry.turn_off();
+                        HQServer hqServer = HQServerHelper.narrow(nameServiceServers.resolve_str(name + "HQCon"));
+                        hqServer.turn_off_entry_gate();
+
+
                     } catch (Exception e2)
                     {
                         e2.printStackTrace();
@@ -147,7 +142,7 @@ public class HQ extends JFrame {
                         String a = tableServers.getValueAt(tableServers.getSelectedRow(),0).toString();
                         System.out.println(a);
 
-                        HQServer headquarters = HQServerHelper.narrow(nameService1.resolve_str( a + "HQCon"));
+                        HQServer headquarters = HQServerHelper.narrow(nameServiceServers.resolve_str( a + "HQCon"));
 
 
                         //HQImpl.listOfLocalServers.get(tableServers.getSelectedRow());

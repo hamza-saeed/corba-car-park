@@ -3,9 +3,6 @@ import static CarPark.EventType.Exited;
 
 public class ExitGateImpl extends ExitGatePOA {
 
-    LServerImpl lserver = new LServerImpl();
-
-
     @Override
     public String machine_name() {
         return null;
@@ -17,13 +14,13 @@ public class ExitGateImpl extends ExitGatePOA {
         machine.name = machineName;
         machine.ior = iorVal;
         machine.enabled = true;
-        lserver.add_exit_gate(machine);
+        LServer.lserver.add_exit_gate(machine);
         System.out.println("Added: " + machineName + " with ior" + iorVal);
     }
 
     @Override
     public void car_exited(String reg, Date date, Time time) {
-        if (lserver.vehicle_in_car_park(reg)) {
+        if (LServer.lserver.vehicle_in_car_park(reg)) {
             String dateStr = Integer.toString(date.day) + "/" + Integer.toString(date.month) + "/" + Integer.toString(date.year);
             VehicleEvent vehicleEvent = new VehicleEvent();
             vehicleEvent.registration_number = reg;
@@ -32,7 +29,7 @@ public class ExitGateImpl extends ExitGatePOA {
             vehicleEvent.event = Exited;
             System.out.println("Car Exited with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
 
-            lserver.vehicle_out(vehicleEvent);
+            LServer.lserver.vehicle_out(vehicleEvent);
         }
         else {
             System.out.println("Vehicle with registration '" + reg + "' is NOT in car park.");

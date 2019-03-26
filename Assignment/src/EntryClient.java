@@ -15,6 +15,7 @@ public class EntryClient extends JFrame {
 
     static JButton btnAddReg;
     static JTextField txtReg;
+    static EntryGateImpl entryImpl = new EntryGateImpl();
 
     public EntryClient(){
 
@@ -43,37 +44,61 @@ public class EntryClient extends JFrame {
 
         // Initialize the ORB
         System.out.println("Initializing the ORB");
-        ORB orb = ORB.init(args, null);
-        // Get a reference to the Naming service
-        org.omg.CORBA.Object nameServiceObj =
-                null;
-        try {
-            nameServiceObj = orb.resolve_initial_references ("NameService");
 
-        if (nameServiceObj == null) {
-            System.out.println("nameServiceObj = null");
+        try {
+            ORB orb = ORB.init(args, null);
+
+            //get reference to rootpoa & activate the POAManager
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
+
+            //Get a reference to the Naming service
+            org.omg.CORBA.Object nameServiceObjClients = orb.resolve_initial_references("NameService");
+            if (nameServiceObjClients == null) {
+                System.out.println("nameServiceObjClients = null");
+                return;
+            }
+
+            // Use NamingContextExt instead of NamingContext. This is
+            // part of the Interoperable naming Service.
+            NamingContextExt nameServiceClients = NamingContextExtHelper.narrow(nameServiceObjClients);
+            if (nameServiceClients == null) {
+                System.out.println("nameServiceClients = null");
+                return;
+            }
+
+            // Create the Entry servant object
+            HQImpl hqImpl = new HQImpl();
+            // get object reference from the servant
+            org.omg.CORBA.Object hqref = rootpoa.servant_to_reference(hqImpl);
+            HQServer hqCref = HQServerHelper.narrow(hqref);
+
+
+            String gateName = getArgs(args,"-Name");
+
+            NameComponent[] hqName = nameServiceClients.to_name(gateName + "HQCon");
+            nameServiceClients.rebind(hqName, hqCref);
+            EntryGateImpl.EntryGateName = gateName;
+
+
+            org.omg.CORBA.Object nameServiceObjServer = orb.resolve_initial_references ("NameService");
+
+        if (nameServiceObjServer == null) {
+            System.out.println("nameServiceObjServer= null");
             return;
         }
 
         // Use NamingContextExt instead of NamingContext. This is
         // part of the Interoperable naming Service.
-        NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
-        if (nameService == null) {
-            System.out.println("nameService = null");
+        NamingContextExt nameServiceServer = NamingContextExtHelper.narrow(nameServiceObjServer);
+        if (nameServiceServer == null) {
+            System.out.println("nameServiceServer = null");
             return;
         }
 
-        String gateName = getArgs(args,"-Name");
+        // create servant and register it with the ORB
+        EntryGate entry = EntryGateHelper.narrow(nameServiceServer.resolve_str(gateName));
 
-        EntryGate entry = EntryGateHelper.narrow(nameService.resolve_str(gateName));
-
-            // get reference to rootpoa & activate the POAManager
-            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootpoa.the_POAManager().activate();
-
-
-            // create servant and register it with the ORB
-            EntryGateImpl entryImpl = new EntryGateImpl();
 
             // Get the 'stringified IOR'
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(entryImpl);
@@ -91,43 +116,17 @@ public class EntryClient extends JFrame {
                     date.day = a.getDayOfMonth();
                     date.month = a.getMonth().getValue();
                     date.year = a.getYear();
-
                     time.hr = a.getHour();
                     time.min = a.getMinute();
                     time.sec = a.getSecond();
 
                     entry.car_entered(txtReg.getText(),date,time);
-
                 }
             });
 
-
-            org.omg.CORBA.Object nameServiceObj1 = orb.resolve_initial_references("NameService");
-
-            if (nameServiceObj1 == null) {
-                System.out.println("nameServiceObj1 = null");
-                return;
-            }
-
-            // Use NamingContextExt instead of NamingContext. This is
-            // part of the Interoperable naming Service.
-            NamingContextExt nameService1 = NamingContextExtHelper.narrow(nameServiceObj1);
-            if (nameService1 == null) {
-                System.out.println("nameService1 = null");
-                return;
-            }
-
-
-            // Create the Entry servant object
-            HQImpl hqImpl = new HQImpl();
-            // get object reference from the servant
-            org.omg.CORBA.Object hqref = rootpoa.servant_to_reference(hqImpl);
-            HQServer hqCref = HQServerHelper.narrow(hqref);
-
-            NameComponent[] hqName = nameService1.to_name("qwertyy");
-            nameService1.rebind(hqName, hqCref);
-
             orb.run();
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -4,12 +4,11 @@ import static CarPark.EventType.Entered;
 
 public class EntryGateImpl extends EntryGatePOA {
 
-    LServerImpl lserver = new LServerImpl();
-
+    public static String EntryGateName;
 
     @Override
     public String machine_name() {
-        return null;
+        return EntryGateName;
     }
 
     @Override
@@ -18,14 +17,13 @@ public class EntryGateImpl extends EntryGatePOA {
         machine.name = machineName;
         machine.ior = iorVal;
         machine.enabled = true;
-        lserver.add_entry_gate(machine);
+        LServer.lserver.add_entry_gate(machine);
         System.out.println("Added: " + machineName + " with ior" + iorVal);
-
     }
 
     @Override
     public void car_entered(String reg, Date date, Time time) {
-        if (!lserver.vehicle_in_car_park(reg)) {
+        if (!LServer.lserver.vehicle_in_car_park(reg)) {
             String dateStr = Integer.toString(date.day) + "/" + Integer.toString(date.month) + "/" + Integer.toString(date.year);
             VehicleEvent vehicleEvent = new VehicleEvent();
             vehicleEvent.registration_number = reg;
@@ -34,7 +32,7 @@ public class EntryGateImpl extends EntryGatePOA {
             vehicleEvent.event = Entered;
             System.out.println("Car Entered with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
 
-            lserver.vehicle_in(vehicleEvent);
+            LServer.lserver.vehicle_in(vehicleEvent);
         }
         else {
             System.out.println("Vehicle with registration '" + reg + "' is already in car park.");
@@ -48,7 +46,7 @@ public class EntryGateImpl extends EntryGatePOA {
 
     @Override
     public void turn_off() {
-        System.out.println("ENTRY GATE WAS TURNED OFF");
+        System.out.println("ENTRY GATE "+ EntryGateName + " WAS TURNED OFF");
     }
 
     @Override

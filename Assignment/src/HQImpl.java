@@ -17,7 +17,6 @@ public class HQImpl extends HQServerPOA {
 
     @Override
     public void raise_alarm(VehicleEvent event) {
-
     }
 
     @Override
@@ -45,5 +44,13 @@ public class HQImpl extends HQServerPOA {
         Machine[] exitGates = new Machine[LServerImpl.listOfExitGates.size()];
         LServerImpl.listOfExitGates.toArray(exitGates);
         return exitGates;
+    }
+
+    @Override
+    public void turn_off_entry_gate() {
+
+        //System.out.println(EntryClient.entryImpl.EntryGateName);
+        EntryClient.entryImpl.turn_off();
+
     }
 }
