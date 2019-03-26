@@ -35,6 +35,7 @@ module CarPark {
     struct Machine {
         string name;
         string ior;
+        boolean enabled;
     };
 
         typedef sequence<VehicleEvent> Log_of_vehicle_events;

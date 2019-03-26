@@ -17,6 +17,7 @@ public class EntryGateImpl extends EntryGatePOA {
         Machine machine = new Machine();
         machine.name = machineName;
         machine.ior = iorVal;
+        machine.enabled = true;
         lserver.add_entry_gate(machine);
         System.out.println("Added: " + machineName + " with ior" + iorVal);
 
@@ -42,12 +43,12 @@ public class EntryGateImpl extends EntryGatePOA {
 
     @Override
     public void turn_on() {
-
+        System.out.println("ENTRY GATE WAS TURNED ON");
     }
 
     @Override
     public void turn_off() {
-
+        System.out.println("ENTRY GATE WAS TURNED OFF");
     }
 
     @Override

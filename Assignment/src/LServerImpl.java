@@ -53,6 +53,7 @@ public class LServerImpl extends LocalServerPOA {
         Machine machine = new Machine();
         machine.name = machineName;
         machine.ior = iorVal;
+        machine.enabled = true;
         hqimp.register_local_server(machine);
         System.out.println("Added: " + machineName + " with ior" + iorVal);
 

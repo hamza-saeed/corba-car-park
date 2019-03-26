@@ -81,7 +81,7 @@ public class LServer {
             // get object reference from the servant
             org.omg.CORBA.Object hqRef = rootpoa.servant_to_reference(hqImpl);
             HQServer hqCRef = HQServerHelper.narrow(hqRef);
-            NameComponent[] hqName = nameService.to_name("qwerty");
+            NameComponent[] hqName = nameService.to_name(lServerName + "HQCon");
             nameService.rebind(hqName, hqCRef);
 
 

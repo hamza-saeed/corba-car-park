@@ -14,6 +14,7 @@ public class PayStationImpl extends PayStationPOA {
         Machine machine = new Machine();
         machine.name = machineName;
         machine.ior = iorVal;
+        machine.enabled = true;
         lServer.add_pay_station(machine);
         System.out.println("Added: " + machineName + " with ior" + iorVal);
     }

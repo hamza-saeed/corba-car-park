@@ -1,6 +1,4 @@
-import CarPark.EntryGate;
-import CarPark.EntryGateHelper;
-import CarPark.Time;
+import CarPark.*;
 import org.omg.CORBA.*;
 import org.omg.CosNaming.*;
 import org.omg.PortableServer.POA;
@@ -104,9 +102,37 @@ public class EntryClient extends JFrame {
             });
 
 
+            org.omg.CORBA.Object nameServiceObj1 = orb.resolve_initial_references("NameService");
+
+            if (nameServiceObj1 == null) {
+                System.out.println("nameServiceObj1 = null");
+                return;
+            }
+
+            // Use NamingContextExt instead of NamingContext. This is
+            // part of the Interoperable naming Service.
+            NamingContextExt nameService1 = NamingContextExtHelper.narrow(nameServiceObj1);
+            if (nameService1 == null) {
+                System.out.println("nameService1 = null");
+                return;
+            }
+
+
+            // Create the Entry servant object
+            HQImpl hqImpl = new HQImpl();
+            // get object reference from the servant
+            org.omg.CORBA.Object hqref = rootpoa.servant_to_reference(hqImpl);
+            HQServer hqCref = HQServerHelper.narrow(hqref);
+
+            NameComponent[] hqName = nameService1.to_name("qwertyy");
+            nameService1.rebind(hqName, hqCref);
+
+            orb.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
 
     public static String getArgs(String[] args, String var) {
