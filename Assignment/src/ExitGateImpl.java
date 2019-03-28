@@ -4,7 +4,7 @@ import static CarPark.EventType.Exited;
 public class ExitGateImpl extends ExitGatePOA {
 
     public static String ExitGateName;
-    public static Machine machine;
+    public static Machine machine = new Machine();
 
     @Override
     public String machine_name() {

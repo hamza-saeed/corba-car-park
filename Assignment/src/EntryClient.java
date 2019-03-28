@@ -15,6 +15,7 @@ public class EntryClient extends JFrame {
 
     static JButton btnAddReg;
     static JTextField txtReg;
+    static JButton btnRefresh;
     static EntryGateImpl entryImpl = new EntryGateImpl();
 
     public EntryClient(){
@@ -27,12 +28,13 @@ public class EntryClient extends JFrame {
         JLabel lbl2 = new JLabel("Vehicle Registration:");
          txtReg = new JTextField(30);
          btnAddReg = new JButton("Press");
+         btnRefresh = new JButton("Refresh");
 
         panel.add(lbl1);
         panel.add(lbl2);
         panel.add(txtReg);
         panel.add(btnAddReg); // Adds Button to content pane of frame
-
+        panel.add(btnRefresh);
         frame.add(panel);
         frame.setVisible(true);
     }
@@ -67,10 +69,9 @@ public class EntryClient extends JFrame {
                 return;
             }
 
-            // Create the Entry servant object
-            HQImpl hqImpl = new HQImpl();
+
             // get object reference from the servant
-            org.omg.CORBA.Object hqref = rootpoa.servant_to_reference(hqImpl);
+            org.omg.CORBA.Object hqref = rootpoa.servant_to_reference(HQ.hqimp);
             HQServer hqCref = HQServerHelper.narrow(hqref);
 
 
@@ -121,6 +122,14 @@ public class EntryClient extends JFrame {
                     time.sec = a.getSecond();
 
                     entry.car_entered(txtReg.getText(),date,time);
+                }
+            });
+
+
+            btnRefresh.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println(EntryGateImpl.machine.enabled);
                 }
             });
 

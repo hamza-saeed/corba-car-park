@@ -48,7 +48,14 @@ public class HQImpl extends HQServerPOA {
 
     @Override
     public void toggle_entry_gate() {
-        if ()
+        if (EntryGateImpl.machine.enabled)
+        {
+            EntryClient.entryImpl.turn_off();
+        }
+        else
+        {
+            EntryClient.entryImpl.turn_on();
+        }
     }
 
     @Override

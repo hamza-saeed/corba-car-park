@@ -5,7 +5,7 @@ import static CarPark.EventType.Entered;
 public class EntryGateImpl extends EntryGatePOA {
 
     public static String EntryGateName;
-    public static Machine machine;
+    public static Machine machine = new Machine();
 
     @Override
     public String machine_name() {
@@ -41,12 +41,15 @@ public class EntryGateImpl extends EntryGatePOA {
 
     @Override
     public void turn_on() {
+        machine.enabled = true;
         System.out.println("ENTRY GATE WAS TURNED ON");
     }
 
     @Override
     public void turn_off() {
-        System.out.println("ENTRY GATE "+ EntryGateName + " WAS TURNED OFF");
+        machine.enabled = false;
+            System.out.println("ENTRY GATE "+ EntryGateName + " WAS TURNED OFF"
+        );
     }
 
     @Override
