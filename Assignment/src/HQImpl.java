@@ -47,10 +47,24 @@ public class HQImpl extends HQServerPOA {
     }
 
     @Override
-    public void turn_off_entry_gate() {
+    public void toggle_entry_gate() {
+        if ()
+    }
 
-        //System.out.println(EntryClient.entryImpl.EntryGateName);
-        EntryClient.entryImpl.turn_off();
+    @Override
+    public void toggle_paystation() {
 
     }
+
+    @Override
+    public void toggle_exit_gate() {
+
+        EntryClient.entryImpl.turn_off();
+    }
+
+    @Override
+    public void toggle_local_server() {
+
+    }
+
 }

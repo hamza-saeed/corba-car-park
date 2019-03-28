@@ -75,6 +75,7 @@ public class HQ extends JFrame {
 
             String[] localServers = getArgs(args, "-LocalServers").split(",");
 
+            //Code to connect to local server
             for (String localServerNameStr : localServers)
             {
                 System.out.println("binding lserver: " + localServerNameStr);
@@ -82,7 +83,6 @@ public class HQ extends JFrame {
                 nameServiceClient.rebind(lServerNames, lServerCref);
             }
 
-            //Code to connect to local server
 
             // Get a reference to the Naming service
             org.omg.CORBA.Object nameServiceObjServers = orb.resolve_initial_references("NameService");
@@ -119,7 +119,7 @@ public class HQ extends JFrame {
                     try {
 
                         HQServer hqServer = HQServerHelper.narrow(nameServiceServers.resolve_str(name + "HQCon"));
-                        hqServer.turn_off_entry_gate();
+                        hqServer.toggle_entry_gate();
 
 
                     } catch (Exception e2)

@@ -5,6 +5,7 @@ import static CarPark.EventType.Entered;
 public class EntryGateImpl extends EntryGatePOA {
 
     public static String EntryGateName;
+    public static Machine machine;
 
     @Override
     public String machine_name() {
@@ -13,7 +14,6 @@ public class EntryGateImpl extends EntryGatePOA {
 
     @Override
     public void registerGate(String machineName, String iorVal) {
-        Machine machine = new Machine();
         machine.name = machineName;
         machine.ior = iorVal;
         machine.enabled = true;

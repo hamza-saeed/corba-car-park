@@ -3,14 +3,16 @@ import static CarPark.EventType.Exited;
 
 public class ExitGateImpl extends ExitGatePOA {
 
+    public static String ExitGateName;
+    public static Machine machine;
+
     @Override
     public String machine_name() {
-        return null;
+        return ExitGateName;
     }
 
     @Override
     public void registerGate(String machineName, String iorVal) {
-        Machine machine = new Machine();
         machine.name = machineName;
         machine.ior = iorVal;
         machine.enabled = true;
@@ -38,12 +40,12 @@ public class ExitGateImpl extends ExitGatePOA {
 
     @Override
     public void turn_on() {
-
+        machine.enabled = true;
     }
 
     @Override
     public void turn_off() {
-
+        machine.enabled = false;
     }
 
     @Override

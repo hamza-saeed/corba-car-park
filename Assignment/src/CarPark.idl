@@ -73,8 +73,10 @@ module CarPark {
         List_of_entryGates returnEntryGates();
         List_of_payStations returnPayStations();
         List_of_exitGates returnExitGates();
-        void turn_off_entry_gate();
-
+        void toggle_entry_gate();
+        void toggle_paystation();
+        void toggle_exit_gate();
+        void toggle_local_server();
      };
 
 
