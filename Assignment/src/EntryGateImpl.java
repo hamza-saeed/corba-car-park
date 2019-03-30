@@ -5,7 +5,7 @@ import static CarPark.EventType.Entered;
 public class EntryGateImpl extends EntryGatePOA {
 
     public static String EntryGateName;
-    public static Machine machine = new Machine();
+    public static Machine machine;
 
     @Override
     public String machine_name() {
@@ -14,17 +14,26 @@ public class EntryGateImpl extends EntryGatePOA {
 
     @Override
     public void registerGate(String machineName, String iorVal) {
+        //create new machine and set values
+        machine = new Machine();
         machine.name = machineName;
         machine.ior = iorVal;
+        //enabled by default
         machine.enabled = true;
+        //add the entry gate to the local server
         LServer.lserver.add_entry_gate(machine);
-        System.out.println("Added: " + machineName + " with ior" + iorVal);
+        System.out.println("Registered New Gate with name: " + machineName);
     }
 
     @Override
     public void car_entered(String reg, Date date, Time time) {
+
+        //if the vehicle is not already in the car park
+
         if (!LServer.lserver.vehicle_in_car_park(reg)) {
-            String dateStr = Integer.toString(date.day) + "/" + Integer.toString(date.month) + "/" + Integer.toString(date.year);
+            //put date in string format
+            String dateStr = (date.day) + "/" + (date.month) + "/" + (date.year);
+            //add information to vehicle event
             VehicleEvent vehicleEvent = new VehicleEvent();
             vehicleEvent.registration_number = reg;
             vehicleEvent.date = date;
@@ -42,20 +51,20 @@ public class EntryGateImpl extends EntryGatePOA {
     @Override
     public void turn_on() {
         machine.enabled = true;
-        System.out.println("ENTRY GATE WAS TURNED ON");
+        System.out.println("ENTRY GATE " + machine_name() + "  WAS TURNED ON");
     }
 
     @Override
     public void turn_off() {
         machine.enabled = false;
-            System.out.println("ENTRY GATE "+ EntryGateName + " WAS TURNED OFF"
-        );
+            System.out.println("ENTRY GATE " + machine_name() + " WAS TURNED OFF");
     }
 
     @Override
     public void reset() {
         turn_off();
         turn_on();
+        System.out.println("ENTRY GATE " + machine_name() + " WAS TURNED RESET");
     }
 }
 

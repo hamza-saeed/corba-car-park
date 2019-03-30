@@ -2,7 +2,7 @@ import CarPark.*;
 
 public class PayStationImpl extends PayStationPOA {
 
-    LServerImpl lServer = new LServerImpl();
+    public static String PayStationName;
 
     @Override
     public String machine_name() {
@@ -15,7 +15,7 @@ public class PayStationImpl extends PayStationPOA {
         machine.name = machineName;
         machine.ior = iorVal;
         machine.enabled = true;
-        lServer.add_pay_station(machine);
+        LServer.lserver.add_pay_station(machine);
         System.out.println("Added: " + machineName + " with ior" + iorVal);
     }
 
@@ -36,12 +36,12 @@ public class PayStationImpl extends PayStationPOA {
 
     @Override
     public boolean checkVehicleInCarPark(String carReg) {
-        return lServer.vehicle_in_car_park(carReg);
+        return LServer.lserver.vehicle_in_car_park(carReg);
     }
 
     @Override
     public boolean createTicket(Ticket newTicket) {
-        if (lServer.add_Ticket(newTicket))
+        if (LServer.lserver.add_Ticket(newTicket))
         {
             System.out.println("Added Ticket");
             return true;
@@ -60,10 +60,10 @@ public class PayStationImpl extends PayStationPOA {
         payEvent.time=payTime;
         payEvent.date=payDate;
         payEvent.event = EventType.Paid;
-        if (!lServer.vehicle_already_paid(carReg)) {
-            if (lServer.vehicle_in_car_park(carReg)) {
+        if (!LServer.lserver.vehicle_already_paid(carReg)) {
+            if (LServer.lserver.vehicle_in_car_park(carReg)) {
                 //TODO: Check if Reg is in car park/duration etc.
-                if (lServer.vehicle_paid(payEvent)) {
+                if (LServer.lserver.vehicle_paid(payEvent)) {
                     System.out.println("Car Reg:" + carReg + " paid.");
                     return true;
                 } else {
