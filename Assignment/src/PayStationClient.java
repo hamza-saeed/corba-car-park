@@ -9,46 +9,21 @@ import org.omg.PortableServer.POAHelper;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class PayStationClient extends JFrame {
 
-    static PayStationImpl payStationImpl = new PayStationImpl();
-    private static PayStation payStation;
-    static double hrsStayed;
+    static PayStationImplementation payStationImpl = new PayStationImplementation();
+    static int hrsStayed;
     static double cost;
 
-    public PayStationClient() {
-        //initBasicComponents();
+    public PayStationClient()
+    {
         initComponents();
     }
 
-    public static void main(String args[]) {
-
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PayStationClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PayStationClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PayStationClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PayStationClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
+    public static void main(String args[])
+    {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -59,12 +34,54 @@ public class PayStationClient extends JFrame {
 
     }
 
+    private static void setupClientServerConnections(String[] args) {
+
+        String payStationName = getArgs(args, "-Name");
+        String serverName = getArgs(args,"-LocalServer");
+
+        try {
+            ORB orb = ORB.init(args, null);
+
+            org.omg.CORBA.Object nameServiceObject = orb.resolve_initial_references("NameService");
+            if (nameServiceObject == null)
+            {
+                System.out.println("nameServiceObject = null");
+            }
+
+            NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObject);
+            if (nameService == null)
+            {
+                System.out.println("nameService=null");
+            }
+
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
+
+
+            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(payStationImpl);
+            PayStation cref = PayStationHelper.narrow(ref);
+            NameComponent[] payName = nameService.to_name(payStationName);
+            nameService.rebind(payName, cref);
+
+            LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
+            payStationImpl.registerPaystation(payStationName,"000", localServer);
+
+            lblName.setText("Name: " + payStationName);
+            lblServer.setText("Server: " + serverName);
+
+            orb.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void txtHoursStayKeyTyped(java.awt.event.KeyEvent evt) {
     }
 
     private void txtHoursStayKeyReleased(java.awt.event.KeyEvent evt) {
         try {
-            hrsStayed = Math.ceil(Double.parseDouble(txtHoursStay.getText()));
+            hrsStayed = (int)Math.ceil(Double.parseDouble(txtHoursStay.getText()));
             cost = hrsStayed * 1;
             lblCost.setText("£" + cost);
             lblWarning.setText("");
@@ -74,6 +91,12 @@ public class PayStationClient extends JFrame {
     }
 
     private void btnPayActionPerformed(java.awt.event.ActionEvent evt) {
+        if (!payStationImpl.machine.enabled)
+        {
+            JOptionPane.showMessageDialog(null,"Paystation is disabled", "Error",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         String reg = txtReg.getText();
 
         LocalDateTime dateTime = LocalDateTime.now();
@@ -100,7 +123,7 @@ public class PayStationClient extends JFrame {
         expiryTime.sec = dateTime.getSecond();
 
 
-        if (payStation.pay(txtReg.getText(),payDate, payTime,4)) {
+        if (payStationImpl.pay(txtReg.getText(),payDate, payTime,hrsStayed, cost)) {
             JFrame ticketWindow = new JFrame("Your Ticket");
             ticketWindow.setSize(500,200);
             JPanel ticketPanel = new JPanel();
@@ -114,106 +137,32 @@ public class PayStationClient extends JFrame {
                 }
             });
             StringBuilder ticket = new StringBuilder();
-             ticket.append("Car Reg: " + reg + "\n");
-             ticket.append("Amount Paid: £" + cost + "\n");
-             ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year + " " );
-             ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec + "\n");
-             ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" +  expiry.getYear() + " ");
-             ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
+            ticket.append("Car Reg: " + reg + "\n");
+            ticket.append("Amount Paid: £" + cost + "\n");
+            ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year + " " );
+            ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec + "\n");
+            ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" +  expiry.getYear() + " ");
+            ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
 
-             ticketPanel.add(ticketText);
-             ticketPanel.add(btnClose);
-             ticketWindow.add(ticketPanel);
-             ticketWindow.setVisible(true);
-             ticketText.append(ticket.toString());
-             Ticket newTicket = new Ticket();
+            ticketPanel.add(ticketText);
+            ticketPanel.add(btnClose);
+            ticketWindow.add(ticketPanel);
+            ticketWindow.setVisible(true);
+            ticketText.append(ticket.toString());
+//            Ticket newTicket = new Ticket();
+//            newTicket.registration_number = reg;
+//            newTicket.amountPaid = cost;
+//            newTicket.dateEntered = payDate;
+//            newTicket.timeEntered = payTime;
+//            newTicket.dateToLeave = expiryDate;
+//            newTicket.timeToLeave = expiryTime;
+//            payStationImpl.createTicket(newTicket);
             System.out.println("amountPaid:" + cost);
 
-            newTicket.registration_number = reg;
-            newTicket.amountPaid = cost;
-            newTicket.dateEntered = payDate;
-            newTicket.timeEntered = payTime;
-            newTicket.dateToLeave = expiryDate;
-            newTicket.timeToLeave = expiryTime;
-            payStation.createTicket(newTicket);
 
             //TODO: Clear screens for next customer
         }
 
-    }
-
-    private static void setupClientServerConnections(String args[])
-    {
-        // Initialize the ORB
-        System.out.println("Initializing the ORB");
-
-        try {
-            ORB orb = ORB.init(args, null);
-
-            //get reference to rootpoa & activate the POAManager
-            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootpoa.the_POAManager().activate();
-
-            //Get a reference to the Naming service
-            org.omg.CORBA.Object nameServiceObjClients = orb.resolve_initial_references("NameService");
-            if (nameServiceObjClients == null) {
-                System.out.println("nameServiceObjClients = null");
-                return;
-            }
-
-            // Use NamingContextExt instead of NamingContext. This is
-            // part of the Interoperable naming Service.
-            NamingContextExt nameServiceClients = NamingContextExtHelper.narrow(nameServiceObjClients);
-            if (nameServiceClients == null) {
-                System.out.println("nameServiceClients = null");
-                return;
-            }
-
-
-            // get object reference from the servant
-            org.omg.CORBA.Object hqref = rootpoa.servant_to_reference(HQ.hqimp);
-            HQServer hqCref = HQServerHelper.narrow(hqref);
-
-
-            String gateName = getArgs(args,"-Name");
-
-            NameComponent[] hqName = nameServiceClients.to_name(gateName + "HQCon");
-            nameServiceClients.rebind(hqName, hqCref);
-            PayStationImpl.PayStationName = gateName;
-
-
-            org.omg.CORBA.Object nameServiceObjServer = orb.resolve_initial_references ("NameService");
-
-            if (nameServiceObjServer == null) {
-                System.out.println("nameServiceObjServer= null");
-                return;
-            }
-
-            // Use NamingContextExt instead of NamingContext. This is
-            // part of the Interoperable naming Service.
-            NamingContextExt nameServiceServer = NamingContextExtHelper.narrow(nameServiceObjServer);
-            if (nameServiceServer == null) {
-                System.out.println("nameServiceServer = null");
-                return;
-            }
-
-            // create servant and register it with the ORB
-            payStation = PayStationHelper.narrow(nameServiceServer.resolve_str(gateName));
-
-
-            // Get the 'stringified IOR'
-            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(payStationImpl);
-            String stringified_ior =
-                    orb.object_to_string(ref);
-
-            payStation.registerPaystation(gateName, stringified_ior);
-
-            orb.run();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private static String getArgs(String[] args, String var) {
@@ -227,124 +176,19 @@ public class PayStationClient extends JFrame {
     }
 
 
-    private static void initBasicComponents()
-    {
-        JButton btnAddReg;
-        JTextField txtReg;
-        JTextField txtHrs;
-        JLabel lblCost;
-        JButton btnPay;
-        JFrame frame = new JFrame("Pay Station");
-        JPanel panel = new JPanel();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-
-
-        JLabel lbl1 = new JLabel("Pay Station");
-        JLabel lbl2 = new JLabel("Vehicle Registration:");
-        txtReg = new JTextField(30);
-        txtHrs = new JTextField(5);
-        btnAddReg = new JButton("Press");
-
-        lblCost = new JLabel();
-        btnPay = new JButton("Pay");
-
-        btnAddReg.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    hrsStayed = Math.ceil(Double.parseDouble(txtHrs.getText()));
-                    cost = hrsStayed * 1;
-                    lblCost.setText("£" + cost);
-                } catch (NumberFormatException nf) {
-                    JOptionPane.showMessageDialog(null, "Input must be a number");
-                }
-            }
-        });
-
-
-        btnPay.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                String reg = txtReg.getText();
-
-                LocalDateTime dateTime = LocalDateTime.now();
-
-                Date payDate = new Date();
-                payDate.day = dateTime.getDayOfMonth();
-                payDate.month = dateTime.getMonth().getValue();
-                payDate.year = dateTime.getYear();
-
-                Time payTime = new Time();
-                payTime.hr = dateTime.getHour();
-                payTime.min = dateTime.getMinute();
-                payTime.sec = dateTime.getSecond();
-
-                LocalDateTime expiry = dateTime.plusHours((long)cost);
-                Date expiryDate = new Date();
-                expiryDate.day = dateTime.getDayOfMonth();
-                expiryDate.month = dateTime.getMonth().getValue();
-                expiryDate.year = dateTime.getYear();
-
-                Time expiryTime = new Time();
-                expiryTime.hr = dateTime.getHour();
-                expiryTime.min = dateTime.getMinute();
-                expiryTime.sec = dateTime.getSecond();
-
-
-                if (payStation.pay(txtReg.getText(),payDate, payTime,4)){
-                    StringBuilder ticket = new StringBuilder();
-//                        ticket.append("Car Reg: " + reg + "\n");
-//                        ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year + " " );
-//                        ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec + "\n");
-//                        ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" +  expiry.getYear() + " ");
-//                        ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
-                    Ticket newTicket = new Ticket();
-                    System.out.println("Reg:" + reg);
-                    System.out.println("amountPaid:" + cost);
-                    System.out.println("dateEntered:" + payDate);
-                    System.out.println("timeEntered:" + payTime);
-                    System.out.println("dateToLeave:" + expiryDate);
-                    System.out.println("timeEntered:" + expiryTime);
-
-
-                    newTicket.registration_number = reg;
-                    newTicket.amountPaid = cost;
-                    newTicket.dateEntered = payDate;
-                    newTicket.timeEntered = payTime;
-                    newTicket.dateToLeave = expiryDate;
-                    newTicket.timeToLeave = expiryTime;
-                    payStation.createTicket(newTicket);
-//                        System.out.println(ticket.toString());
-                }
-
-            }
-        });
-
-        panel.add(lbl1);
-        panel.add(lbl2);
-        panel.add(txtReg);
-        panel.add(txtHrs);
-        panel.add(btnAddReg); // Adds Button to content pane of frame
-        panel.add(lblCost);
-
-        panel.add(btnPay);
-        frame.add(panel);
-        frame.setVisible(true);
-
-    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         background = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        lblServer = new javax.swing.JLabel();
+        lblName = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         txtReg = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -359,6 +203,46 @@ public class PayStationClient extends JFrame {
         setResizable(false);
 
         background.setBackground(new java.awt.Color(255, 255, 255));
+
+        jPanel2.setBackground(new java.awt.Color(22, 186, 136));
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Pay Station");
+
+        lblServer.setForeground(new java.awt.Color(255, 255, 255));
+        lblServer.setText("[Server]");
+
+        lblName.setForeground(new java.awt.Color(255, 255, 255));
+        lblName.setText("[Name]");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addContainerGap(52, Short.MAX_VALUE)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(lblServer, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(71, 71, 71))
+        );
+        jPanel2Layout.setVerticalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(lblName)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(lblServer))
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGap(33, 33, 33)
+                                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)))
+                                .addGap(27, 27, 27))
+        );
 
         jPanel1.setBackground(new java.awt.Color(22, 160, 134));
 
@@ -395,30 +279,7 @@ public class PayStationClient extends JFrame {
                         .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(97, 97, 97)
                                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(215, Short.MAX_VALUE))
-        );
-
-        jPanel2.setBackground(new java.awt.Color(22, 186, 136));
-
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Pay Station");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(35, 35, 35)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(83, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
-                                .addContainerGap())
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -444,6 +305,7 @@ public class PayStationClient extends JFrame {
         lblWarning.setForeground(new java.awt.Color(255, 51, 51));
 
         btnPay.setText("Pay");
+
         btnPay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPayActionPerformed(evt);
@@ -471,13 +333,13 @@ public class PayStationClient extends JFrame {
                                                         .addComponent(btnPay)
                                                         .addComponent(lblCost)
                                                         .addComponent(txtReg, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGap(0, 90, Short.MAX_VALUE)))
+                                                .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
                 jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(59, 59, 59)
+                                .addContainerGap(59, Short.MAX_VALUE)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel2)
                                         .addComponent(txtReg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -495,29 +357,29 @@ public class PayStationClient extends JFrame {
                                         .addComponent(lblCost)
                                         .addComponent(jLabel5))
                                 .addGap(18, 18, 18)
-                                .addComponent(btnPay)
-                                .addContainerGap(52, Short.MAX_VALUE))
+                                .addComponent(btnPay))
         );
 
         javax.swing.GroupLayout backgroundLayout = new javax.swing.GroupLayout(background);
         background.setLayout(backgroundLayout);
         backgroundLayout.setHorizontalGroup(
                 backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(backgroundLayout.createSequentialGroup()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, 0)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(126, 126, 126)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(backgroundLayout.createSequentialGroup()
-                                .addGap(110, 110, 110)
+                                .addGap(113, 113, 113)
                                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         backgroundLayout.setVerticalGroup(
                 backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(backgroundLayout.createSequentialGroup()
-                                .addGap(90, 90, 90)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(5, 5, 5)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 26, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -528,7 +390,9 @@ public class PayStationClient extends JFrame {
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(background, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(background, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -548,9 +412,10 @@ public class PayStationClient extends JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel lblCost;
+    static javax.swing.JLabel lblName;
+    static javax.swing.JLabel lblServer;
     private javax.swing.JLabel lblWarning;
     private javax.swing.JTextField txtHoursStay;
     private javax.swing.JTextField txtReg;
     // End of variables declaration
-
 }
