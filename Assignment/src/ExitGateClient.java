@@ -56,20 +56,28 @@ public class ExitGateClient extends JFrame {
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             rootpoa.the_POAManager().activate();
 
-
-            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(exitImpl);
-            ExitGate cref = ExitGateHelper.narrow(ref);
-            NameComponent[] exitName = nameService.to_name(exitGateName);
-            nameService.rebind(exitName, cref);
-            //TODO: ADD IOR
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
             exitImpl.lServerRef = localServer;
-            exitImpl.registerGate(exitGateName);
 
-            lblName.setText("Name: " + exitGateName);
-            lblServer.setText("Server: " + serverName);
+            if (localServer.isEntryNameUnique(exitGateName)) {
+                exitImpl.registerGate(exitGateName);
 
-            orb.run();
+                org.omg.CORBA.Object ref = rootpoa.servant_to_reference(exitImpl);
+                ExitGate cref = ExitGateHelper.narrow(ref);
+                NameComponent[] exitName = nameService.to_name(exitGateName);
+                nameService.rebind(exitName, cref);
+
+
+                lblName.setText("Name: " + exitGateName);
+                lblServer.setText("Server: " + serverName);
+
+                orb.run();
+            }
+            else
+                {
+                    JOptionPane.showMessageDialog(null,"Exit Gate name must be unique");
+                    return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -22,5 +22,18 @@ public class HQImplementation extends HQServerPOA {
         listOfLocalServers.add(machine);
     }
 
+    @Override
+    public boolean isLocalServerNameUnique(String name) {
+        boolean unique = true;
+        for (Machine lServers : listOfLocalServers)
+        {
+            if (lServers.name.equals(name))
+            {
+                unique = false;
+            }
+        }
+        return unique;
+    }
+
 
 }

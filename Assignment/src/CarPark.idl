@@ -24,6 +24,7 @@ module CarPark {
     	short hrsStay;
     	double amountPaid;
     	string paystationName;
+    	string alert;
     };
 
     struct Machine {
@@ -39,6 +40,7 @@ module CarPark {
      interface  HQServer {
         void raise_alarm(in ParkingTransaction transaction);
         void register_local_server(in Machine machine);
+        boolean isLocalServerNameUnique(in string name);
      };
 
 
@@ -62,7 +64,14 @@ module CarPark {
         void updateEntryGate(in string machineName, in boolean enabled);
         void updatePayStation(in string machineName, in boolean enabled);
         void updateExitGate(in string machineName, in boolean enabled);
-
+        double getCost();
+        void setCost(in double newCost);
+        short returnNumberofSpaces();
+        short returnAvailableSpaces();
+        ParkingTransaction getParkingTransaction(in string reg);
+        boolean isEntryNameUnique(in string name);
+        boolean isPayStationNameUnique(in string name);
+        boolean isExitGateNameUnique(in string name);
         };
 
     interface  PayStation {
@@ -70,7 +79,7 @@ module CarPark {
         void registerPaystation(in string machineName);
         void toggleEnabled();
         void reset();
-        boolean pay(in string carReg, in Date payDate, in Time payTime, in long duration, in double amountPaid);
+        boolean pay(in string carReg, in long duration, in double amountPaid);
         double return_cash_total();
     };
 

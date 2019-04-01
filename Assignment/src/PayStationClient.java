@@ -9,6 +9,7 @@ import org.omg.PortableServer.POAHelper;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class PayStationClient extends JFrame {
@@ -57,20 +58,28 @@ public class PayStationClient extends JFrame {
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             rootpoa.the_POAManager().activate();
 
-
-            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(payStationImpl);
-            PayStation cref = PayStationHelper.narrow(ref);
-            NameComponent[] payName = nameService.to_name(payStationName);
-            nameService.rebind(payName, cref);
-
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
             payStationImpl.lServerRef = localServer;
-            payStationImpl.registerPaystation(payStationName);
 
-            lblName.setText("Name: " + payStationName);
-            lblServer.setText("Server: " + serverName);
+            if (localServer.isPayStationNameUnique(payStationName)) {
+                payStationImpl.registerPaystation(payStationName);
 
-            orb.run();
+                org.omg.CORBA.Object ref = rootpoa.servant_to_reference(payStationImpl);
+                PayStation cref = PayStationHelper.narrow(ref);
+                NameComponent[] payName = nameService.to_name(payStationName);
+                nameService.rebind(payName, cref);
+
+
+                lblName.setText("Name: " + payStationName);
+                lblServer.setText("Server: " + serverName);
+
+                orb.run();
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null,"Paystation name must be unique");
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,7 +93,7 @@ public class PayStationClient extends JFrame {
         try {
             hrsStayed = (int)Math.ceil(Double.parseDouble(txtHoursStay.getText()));
             if (hrsStayed <= 48) {
-                cost = hrsStayed * 1;
+                cost = hrsStayed * payStationImpl.lServerRef.getCost();
                 lblCost.setText("£" + cost);
                 lblWarning.setText("");
                 btnPay.setEnabled(true);
@@ -111,58 +120,33 @@ public class PayStationClient extends JFrame {
 
         String reg = txtReg.getText();
 
-        LocalDateTime dateTime = LocalDateTime.now();
+        if (payStationImpl.pay(txtReg.getText(), hrsStayed, cost)) {
+            ParkingTransaction transaction = payStationImpl.lServerRef.getParkingTransaction(reg);
+            LocalDateTime entryDateTime = LocalDateTime.of(transaction.entryDate.year,transaction.entryDate.month,
+                    transaction.entryDate.day,transaction.entryTime.hr,transaction.entryTime.min,transaction.entryTime.sec);
+            LocalDateTime expiry = entryDateTime.plusHours((long)hrsStayed);
+            Date expiryDate = new Date();
+            expiryDate.day = entryDateTime.getDayOfMonth();
+            expiryDate.month = entryDateTime.getMonth().getValue();
+            expiryDate.year = entryDateTime.getYear();
 
-        Date payDate = new Date();
-        payDate.day = dateTime.getDayOfMonth();
-        payDate.month = dateTime.getMonth().getValue();
-        payDate.year = dateTime.getYear();
+            Time expiryTime = new Time();
+            expiryTime.hr = entryDateTime.getHour();
+            expiryTime.min = entryDateTime.getMinute();
+            expiryTime.sec = entryDateTime.getSecond();
 
-        Time payTime = new Time();
-        payTime.hr = dateTime.getHour();
-        payTime.min = dateTime.getMinute();
-        payTime.sec = dateTime.getSecond();
-
-        LocalDateTime expiry = dateTime.plusHours((long)cost);
-        Date expiryDate = new Date();
-        expiryDate.day = dateTime.getDayOfMonth();
-        expiryDate.month = dateTime.getMonth().getValue();
-        expiryDate.year = dateTime.getYear();
-
-        Time expiryTime = new Time();
-        expiryTime.hr = dateTime.getHour();
-        expiryTime.min = dateTime.getMinute();
-        expiryTime.sec = dateTime.getSecond();
-
-
-        if (payStationImpl.pay(txtReg.getText(),payDate, payTime,hrsStayed, cost)) {
-            JFrame ticketWindow = new JFrame("Your Ticket");
-            ticketWindow.setSize(500,200);
-            JPanel ticketPanel = new JPanel();
-            JTextArea ticketText = new JTextArea();
-            ticketText.setEditable(false);
-            JButton btnClose = new JButton("Close");
-            btnClose.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ticketWindow.dispose();
-                }
-            });
-            StringBuilder ticket = new StringBuilder();
+            JTextArea ticket = new JTextArea();
             ticket.append("Car Reg: " + reg + "\n");
             ticket.append("Amount Paid: £" + cost + "\n");
-            ticket.append("Entered: " + payDate.day + "/" + payDate.month + "/" + payDate.year + " " );
-            ticket.append(payTime.hr + ":" + payTime.min + ":" + payTime.sec + "\n");
+            ticket.append("Entered: " + entryDateTime.getDayOfMonth() + "/" + entryDateTime.getMonth().getValue() + "/" + entryDateTime.getYear() + " " );
+            ticket.append(entryDateTime.getHour() + ":" + entryDateTime.getMinute() + ":" + entryDateTime.getSecond() + "\n");
             ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" +  expiry.getYear() + " ");
             ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
 
-            ticketPanel.add(ticketText);
-            ticketPanel.add(btnClose);
-            ticketWindow.add(ticketPanel);
-            ticketWindow.setVisible(true);
-            ticketText.append(ticket.toString());
             System.out.println("amountPaid:" + cost);
 
+            JOptionPane.showMessageDialog(null, new JScrollPane( ticket), "Ticket",
+                    JOptionPane.INFORMATION_MESSAGE);
 
             //TODO: Clear screens for next customer
         }

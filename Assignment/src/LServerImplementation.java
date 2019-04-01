@@ -1,5 +1,6 @@
 import CarPark.*;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,13 +13,15 @@ public class LServerImplementation extends LocalServerPOA {
     public ArrayList<Machine> listOfEntryGates = new ArrayList<Machine>();
     public ArrayList<Machine> listOfExitGates = new ArrayList<Machine>();
     public ArrayList<Machine> listOfPayStations = new ArrayList<Machine>();
+    double cost = 1.0d;
+    short numberOfSpaces = 200;
     Machine machine;
     HQServer HQRef;
 
 
     @Override
     public String location() {
-        return null;
+        return machine.name;
     }
 
     @Override
@@ -65,12 +68,9 @@ public class LServerImplementation extends LocalServerPOA {
     @Override
     public boolean vehicle_in(String reg) {
 
-        if (vehicle_in_car_park(reg))
-        {
+        if (vehicle_in_car_park(reg)) {
             return false;
-        }
-        else
-        {
+        } else {
             //date and time
             LocalDateTime currentDateTime = LocalDateTime.now();
             CarPark.Date date = new CarPark.Date();
@@ -90,6 +90,7 @@ public class LServerImplementation extends LocalServerPOA {
             newTransaction.event = Entered;
             //not set yet
             newTransaction.paystationName = "";
+            newTransaction.alert = "";
             newTransaction.hrsStay = 0;
             newTransaction.amountPaid = 0;
             logOfParkingTransactions.add(newTransaction);
@@ -110,25 +111,23 @@ public class LServerImplementation extends LocalServerPOA {
 
                     //give 5 minute grace period
                     LocalDateTime gracePeriod = LocalDateTime.of(parkingTransaction.entryDate.year, parkingTransaction.entryDate.month, parkingTransaction.entryDate.day,
-                                parkingTransaction.entryTime.hr,parkingTransaction.entryTime.min, parkingTransaction.entryTime.sec).plusMinutes(5);
+                            parkingTransaction.entryTime.hr, parkingTransaction.entryTime.min, parkingTransaction.entryTime.sec).plusMinutes(5);
                     LocalDateTime currentDateTime = LocalDateTime.now();
                     //if they're trying to leave after grace period raise alarm
-                    if (currentDateTime.isAfter(gracePeriod))
-                    {
+                    if (currentDateTime.isAfter(gracePeriod)) {
+                        Duration duration = Duration.between(currentDateTime, gracePeriod);
+                        logOfParkingTransactions.get(i).alert = "Overdue by " + duration.toMinutes() + " mins";
                         //raise alarm but allow them to leave
                         //TODO: pass overdue time.
                         HQRef.raise_alarm(parkingTransaction);
                         logOfParkingTransactions.get(i).event = EventType.Exited;
                         return true;
-                    }
-                    else
-                    {
+                    } else {
                         //they can leave
                         logOfParkingTransactions.get(i).event = EventType.Exited;
                         return true;
                     }
-                }
-                else if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Paid)) {
+                } else if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Paid)) {
                     LocalDateTime dateTime = LocalDateTime.now();
 
                     //LocalDateTime of when car entered
@@ -144,19 +143,18 @@ public class LServerImplementation extends LocalServerPOA {
                     //if
                     if (dateTime.isAfter(expiry)) {
                         //raise alarm but allow them to leave
-                        //TODO: pass overdue time.
-                        HQRef.raise_alarm(parkingTransaction);
+                        Duration duration = Duration.between(expiry, entry);
+                        logOfParkingTransactions.get(i).alert = "Overdue by " + duration.toMinutes() + " mins";
                         logOfParkingTransactions.get(i).event = EventType.Exited;
+                        HQRef.raise_alarm(logOfParkingTransactions.get(i));
                         return true;
-
                     } else {
                         logOfParkingTransactions.get(i).event = EventType.Exited;
                         return true;
                     }
                 }
             }
-        } else
-        {
+        } else {
             //car is NOT in entry gate.
             return false;
         }
@@ -165,11 +163,9 @@ public class LServerImplementation extends LocalServerPOA {
 
     @Override
     public boolean vehicle_payment(String reg, String paystationName, short hrsStay, double amountPaid) {
-        for (int i =0; i < logOfParkingTransactions.size();i++)
-        {
+        for (int i = 0; i < logOfParkingTransactions.size(); i++) {
             ParkingTransaction parkingTransaction = logOfParkingTransactions.get(i);
-            if ((parkingTransaction.registration_number.equals(reg)) && (parkingTransaction.event == EventType.Entered))
-            {
+            if ((parkingTransaction.registration_number.equals(reg)) && (parkingTransaction.event == EventType.Entered)) {
                 logOfParkingTransactions.get(i).paystationName = paystationName;
                 logOfParkingTransactions.get(i).hrsStay = hrsStay;
                 logOfParkingTransactions.get(i).amountPaid = amountPaid;
@@ -209,16 +205,13 @@ public class LServerImplementation extends LocalServerPOA {
         double total = 0;
         LocalDate currentDate = LocalDate.now();
 
-        for (int i = 0; i < logOfParkingTransactions.size(); i++)
-        {
+        for (int i = 0; i < logOfParkingTransactions.size(); i++) {
             ParkingTransaction parkingTransaction = logOfParkingTransactions.get(i);
-            if (parkingTransaction.event == EventType.Paid)
-            {
+            if (parkingTransaction.event != Entered) {
                 if (parkingTransaction.entryDate.day == currentDate.getDayOfMonth() &&
                         (parkingTransaction.entryDate.month == currentDate.getMonth().getValue()) &&
-                        (parkingTransaction.entryDate.year == currentDate.getYear()))
-                {
-                    total +=(double) parkingTransaction.amountPaid;
+                        (parkingTransaction.entryDate.year == currentDate.getYear())) {
+                    total += (double) parkingTransaction.amountPaid;
                 }
             }
         }
@@ -248,10 +241,8 @@ public class LServerImplementation extends LocalServerPOA {
 
     @Override
     public void updateEntryGate(String machineName, boolean enabled) {
-        for (int i=0; i < listOfEntryGates.size();i++)
-        {
-            if (listOfEntryGates.get(i).name.equals(machineName))
-            {
+        for (int i = 0; i < listOfEntryGates.size(); i++) {
+            if (listOfEntryGates.get(i).name.equals(machineName)) {
                 listOfEntryGates.get(i).enabled = enabled;
             }
         }
@@ -259,10 +250,8 @@ public class LServerImplementation extends LocalServerPOA {
 
     @Override
     public void updatePayStation(String machineName, boolean enabled) {
-        for (int i=0; i < listOfPayStations.size();i++)
-        {
-            if (listOfPayStations.get(i).name.equals(machineName))
-            {
+        for (int i = 0; i < listOfPayStations.size(); i++) {
+            if (listOfPayStations.get(i).name.equals(machineName)) {
                 listOfPayStations.get(i).enabled = enabled;
             }
         }
@@ -270,13 +259,86 @@ public class LServerImplementation extends LocalServerPOA {
 
     @Override
     public void updateExitGate(String machineName, boolean enabled) {
-        for (int i=0; i < listOfExitGates.size();i++)
-        {
-            if (listOfExitGates.get(i).name.equals(machineName))
-            {
+        for (int i = 0; i < listOfExitGates.size(); i++) {
+            if (listOfExitGates.get(i).name.equals(machineName)) {
                 listOfExitGates.get(i).enabled = enabled;
             }
         }
     }
 
+    @Override
+    public double getCost() {
+        return cost;
+    }
+
+    @Override
+    public void setCost(double newCost) {
+        cost = newCost;
+    }
+
+    @Override
+    public short returnNumberofSpaces() {
+        return numberOfSpaces;
+    }
+
+    @Override
+    public short returnAvailableSpaces() {
+        short count = numberOfSpaces;
+        for (ParkingTransaction parkingTrans : logOfParkingTransactions) {
+            if (parkingTrans.event != EventType.Exited) {
+                count--;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public ParkingTransaction getParkingTransaction(String reg) {
+        for (int i = 0; i < logOfParkingTransactions.size(); i++) {
+            ParkingTransaction parkingTransaction = logOfParkingTransactions.get(i);
+            if ((parkingTransaction.registration_number.equals(reg)) && (parkingTransaction.event != EventType.Exited)) {
+                return parkingTransaction;
+            }
+        }
+        return new ParkingTransaction();
+    }
+
+    @Override
+    public boolean isEntryNameUnique(String name) {
+        boolean unique = true;
+        for (Machine entryGates : listOfEntryGates)
+        {
+            if (entryGates.name.equals(name))
+            {
+                unique = false;
+            }
+        }
+        return unique;
+    }
+
+    @Override
+    public boolean isPayStationNameUnique(String name) {
+        boolean unique = true;
+        for (Machine paystations : listOfPayStations)
+        {
+            if (paystations.name.equals(name))
+            {
+                unique = false;
+            }
+        }
+        return unique;
+    }
+
+    @Override
+    public boolean isExitGateNameUnique(String name) {
+        boolean unique = true;
+        for (Machine exitGates : listOfExitGates)
+        {
+            if (exitGates.name.equals(name))
+            {
+                unique = false;
+            }
+        }
+        return unique;
+    }
 }

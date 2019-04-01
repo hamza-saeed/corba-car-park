@@ -44,7 +44,7 @@ public class PayStationImplementation extends PayStationPOA {
     }
 
     @Override
-    public boolean pay(String carReg, Date payDate, Time payTime, int duration, double amountPaid) {
+    public boolean pay(String carReg, int duration, double amountPaid) {
 
         if (!lServerRef.vehicle_already_paid(carReg)) {
 

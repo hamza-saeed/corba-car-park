@@ -56,21 +56,32 @@ public class EntryGateClient extends JFrame {
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             rootpoa.the_POAManager().activate();
 
-            org.omg.CORBA.Object ref = rootpoa.servant_to_reference(entryImpl);
-            EntryGate cref = EntryGateHelper.narrow(ref);
-            NameComponent[] entryName = nameService.to_name(entryGateName);
-            nameService.rebind(entryName, cref);
-
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
             //set reference in entry gate implementation
             entryImpl.lserverRef = localServer;
-            //register the gate with client.
-            entryImpl.registerGate(entryGateName);
 
-            lblName.setText("Name: " + entryGateName);
-            lblServer.setText("Server: " + serverName);
+            if (localServer.isEntryNameUnique(entryGateName)) {
 
-            orb.run();
+                entryImpl.registerGate(entryGateName);
+
+                //register the gate with client.
+                org.omg.CORBA.Object ref = rootpoa.servant_to_reference(entryImpl);
+                EntryGate cref = EntryGateHelper.narrow(ref);
+                NameComponent[] entryName = nameService.to_name(entryGateName);
+                nameService.rebind(entryName, cref);
+
+
+
+                lblName.setText("Name: " + entryGateName);
+                lblServer.setText("Server: " + serverName);
+
+                orb.run();
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null,"Entry gate name must be unique");
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

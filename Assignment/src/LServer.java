@@ -15,7 +15,15 @@ public class LServer extends JFrame {
 
     static LServerImplementation lserverimpl = new LServerImplementation();
 
+
     public static void main(String args[]) {
+        try {
+            lserverimpl.numberOfSpaces = Short.parseShort(getArgs(args, "-Spaces"));
+        } catch (Exception e)
+        {
+            //defaulting.
+            lserverimpl.numberOfSpaces = 200;
+        }
         setupClientServerConnections(args);
     }
 
@@ -38,19 +46,25 @@ public class LServer extends JFrame {
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             rootpoa.the_POAManager().activate();
 
-
-            org.omg.CORBA.Object lserverRef = rootpoa.servant_to_reference(lserverimpl);
-            LocalServer cref = LocalServerHelper.narrow(lserverRef);
-            NameComponent[] lserverName = nameService.to_name(localServerName);
-            nameService.rebind(lserverName, cref);
-
             HQServer hqRef = HQServerHelper.narrow(nameService.resolve_str("HQConn"));
             lserverimpl.HQRef = hqRef;
-            lserverimpl.registerLocalServer(localServerName);
 
-            System.out.println("Server started...");
-            orb.run();
+            if (hqRef.isLocalServerNameUnique(localServerName)) {
+                lserverimpl.registerLocalServer(localServerName);
 
+                org.omg.CORBA.Object lserverRef = rootpoa.servant_to_reference(lserverimpl);
+                LocalServer cref = LocalServerHelper.narrow(lserverRef);
+                NameComponent[] lserverName = nameService.to_name(localServerName);
+                nameService.rebind(lserverName, cref);
+
+                System.out.println("Server started...");
+                orb.run();
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null,"Local server name must be unique");
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

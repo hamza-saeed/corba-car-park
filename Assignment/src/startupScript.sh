@@ -6,11 +6,11 @@ java HQ -ORBInitialPort 1075 &
 
 sleep 1
 
-java LServer -ORBInitialPort 1075 -Name lserver001 &
+java LServer -ORBInitialPort 1075 -Name lserver001 -Spaces 150 &
 
 sleep 1
 
-java LServer -ORBInitialPort 1075 -Name lserver002 &
+java LServer -ORBInitialPort 1075 -Name lserver002 -Spaces 50 &
 
 sleep 1
 
@@ -18,7 +18,7 @@ java EntryGateClient -ORBInitialPort 1075 -Name entry001 -LocalServer lserver001
 
 sleep 1
 
-java EntryGateClient -ORBInitialPort 1075 -Name entry002 -LocalServer lserver002 &
+java EntryGateClient -ORBInitialPort 1075 -Name entry001 -LocalServer lserver002 &
 
 sleep 1
 
