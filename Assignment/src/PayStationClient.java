@@ -83,11 +83,22 @@ public class PayStationClient extends JFrame {
     private void txtHoursStayKeyReleased(java.awt.event.KeyEvent evt) {
         try {
             hrsStayed = (int)Math.ceil(Double.parseDouble(txtHoursStay.getText()));
-            cost = hrsStayed * 1;
-            lblCost.setText("£" + cost);
-            lblWarning.setText("");
+            if (hrsStayed <= 48) {
+                cost = hrsStayed * 1;
+                lblCost.setText("£" + cost);
+                lblWarning.setText("");
+                btnPay.setEnabled(true);
+            }
+            else
+            {
+                lblCost.setText((""));
+                lblWarning.setText("Max stay is 48 hours.");
+                btnPay.setEnabled(false);
+            }
         } catch (NumberFormatException nf) {
+            lblCost.setText((""));
             lblWarning.setText("Input must be a number");
+            btnPay.setEnabled(false);
         }
     }
 

@@ -3,96 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e6900341-8412-4924-a98d-0d68c0903e3d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark.idl" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark.idl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/Date.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/Date.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/DateHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/DateHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/DateHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/DateHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EntryGate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EntryGate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EntryGateHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EntryGateHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EntryGateHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EntryGateHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EntryGateOperations.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EntryGateOperations.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EntryGateOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EntryGateOperations.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EntryGatePOA.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EntryGatePOA.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EntryGatePOA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EntryGatePOA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EventType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EventType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EventTypeHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EventTypeHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/EventTypeHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/EventTypeHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ExitGate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ExitGate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ExitGateHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ExitGateHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ExitGateHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ExitGateHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ExitGateOperations.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ExitGateOperations.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ExitGateOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ExitGateOperations.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ExitGatePOA.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ExitGatePOA.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ExitGatePOA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ExitGatePOA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/HQServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/HQServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/HQServerHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/HQServerHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/HQServerHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/HQServerHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/HQServerOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/HQServerOperations.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/HQServerPOA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/HQServerPOA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/List_of_entryGatesHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/List_of_entryGatesHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/List_of_entryGatesHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/List_of_entryGatesHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/List_of_exitGatesHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/List_of_exitGatesHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/List_of_exitGatesHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/List_of_exitGatesHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/List_of_payStationsHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/List_of_payStationsHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/List_of_payStationsHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/List_of_payStationsHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/LocalServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/LocalServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/LocalServerHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/LocalServerHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/LocalServerHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/LocalServerHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/LocalServerOperations.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/LocalServerOperations.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/LocalServerOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/LocalServerOperations.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/LocalServerPOA.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/LocalServerPOA.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/LocalServerPOA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/LocalServerPOA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/Log_of_parking_transactionsHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/Log_of_parking_transactionsHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/Log_of_parking_transactionsHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/Log_of_parking_transactionsHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/Machine.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/Machine.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/Machine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/Machine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/MachineHelper.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/MachineHelper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/MachineHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/MachineHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/MachineHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/MachineHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ParkingTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ParkingTransaction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ParkingTransactionHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ParkingTransactionHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/ParkingTransactionHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/ParkingTransactionHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/PayStation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/PayStation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/PayStationHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/PayStationHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/PayStationHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/PayStationHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/PayStationOperations.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/PayStationOperations.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/PayStationOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/PayStationOperations.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/PayStationPOA.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/PayStationPOA.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/PayStationPOA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/PayStationPOA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/Time.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/Time.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/TimeHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/TimeHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/TimeHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/TimeHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_EntryGateStub.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_EntryGateStub.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_EntryGateStub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_EntryGateStub.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_ExitGateStub.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_ExitGateStub.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_ExitGateStub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_ExitGateStub.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_HQServerStub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_HQServerStub.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_LocalServerStub.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_LocalServerStub.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_LocalServerStub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_LocalServerStub.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_PayStationStub.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_PayStationStub.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CarPark/_PayStationStub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CarPark/_PayStationStub.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/EntryGateClient$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/EntryGateClient$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/EntryGateClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/EntryGateClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/EntryGateClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/EntryGateClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/EntryGateImplementation.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/EntryGateImplementation.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/EntryGateImplementation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/EntryGateImplementation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ExitGateClient$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/ExitGateClient$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ExitGateClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/ExitGateClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ExitGateClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ExitGateClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ExitGateImplementation.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/ExitGateImplementation.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ExitGateImplementation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ExitGateImplementation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HQImplementation.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/HQImplementation.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HQImplementation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HQImplementation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/LServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LServerImplementation.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/LServerImplementation.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LServerImplementation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LServerImplementation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PayStationClient$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/PayStationClient$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PayStationClient$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/PayStationClient$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PayStationClient$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/PayStationClient$4.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PayStationClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/PayStationClient.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PayStationClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PayStationClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PayStationImplementation.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/PayStationImplementation.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PayStationImplementation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PayStationImplementation.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -160,14 +71,14 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="idl" value="907" />
-          <entry key="java" value="11003" />
+          <entry key="java" value="11356" />
           <entry key="sh" value="123" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="IDL" value="907" />
-          <entry key="JAVA" value="11003" />
+          <entry key="JAVA" value="11356" />
           <entry key="PLAIN_TEXT" value="123" />
         </counts>
       </usages-collector>
@@ -175,7 +86,7 @@
         <counts>
           <entry key="class" value="22" />
           <entry key="idl" value="6" />
-          <entry key="java" value="78" />
+          <entry key="java" value="79" />
           <entry key="sh" value="2" />
         </counts>
       </usages-collector>
@@ -183,7 +94,7 @@
         <counts>
           <entry key="CLASS" value="22" />
           <entry key="IDL" value="6" />
-          <entry key="JAVA" value="78" />
+          <entry key="JAVA" value="79" />
           <entry key="PLAIN_TEXT" value="2" />
         </counts>
       </usages-collector>
@@ -200,11 +111,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/PayStationImplementation.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="79" column="13" lean-forward="true" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
+            <state relative-caret-position="375">
+              <caret line="62" column="33" selection-start-line="62" selection-start-column="33" selection-end-line="62" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/PayStationClient.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="405">
+              <caret line="84" column="83" lean-forward="true" selection-start-line="84" selection-start-column="83" selection-end-line="84" selection-end-column="83" />
+              <folding>
+                <element signature="method#setupClientServerConnections#0;class#PayStationClient#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -277,18 +200,6 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/HQ.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1725">
-              <caret line="129" column="28" selection-start-line="129" selection-start-column="28" selection-end-line="129" selection-end-column="28" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -336,7 +247,6 @@
         <option value="$PROJECT_DIR$/src/EntryGateImpl.java" />
         <option value="$PROJECT_DIR$/src/LServerImpl.java" />
         <option value="$PROJECT_DIR$/src/LServer.java" />
-        <option value="$PROJECT_DIR$/src/PayStationClient.java" />
         <option value="$PROJECT_DIR$/src/ExitGateImplementation.java" />
         <option value="$PROJECT_DIR$/src/ExitGateClient.java" />
         <option value="$PROJECT_DIR$/src/EntryGateClient.java" />
@@ -345,6 +255,7 @@
         <option value="$PROJECT_DIR$/src/EntryGateImplementation.java" />
         <option value="$PROJECT_DIR$/src/CarPark.idl" />
         <option value="$PROJECT_DIR$/src/PayStationImplementation.java" />
+        <option value="$PROJECT_DIR$/src/PayStationClient.java" />
       </list>
     </option>
   </component>
@@ -389,7 +300,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ToolWindowTerminal.ShowToolbar" value="false" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554134285252" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554136050351" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
@@ -407,7 +318,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.HQ">
+  <component name="RunManager" selected="Application.PayStationClient">
     <configuration name="EntryClient" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="EntryClient" />
       <module name="CarPark" />
@@ -456,10 +367,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.PayStationClient" />
         <item itemvalue="Application.HQ" />
         <item itemvalue="Application.EntryClient" />
         <item itemvalue="Application.LServer" />
-        <item itemvalue="Application.PayStationClient" />
         <item itemvalue="Application.main" />
       </list>
     </recent_temporary>
@@ -499,14 +410,14 @@
       <window_info content_ui="combo" id="Project" order="6" visible="true" weight="0.257886" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.1419285" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.14162162" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32972974" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Messages" order="9" visible="true" weight="0.32756758" />
+      <window_info anchor="bottom" id="Messages" order="9" weight="0.32756758" />
       <window_info anchor="bottom" auto_hide="true" id="Terminal" order="10" weight="0.31567568" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -691,13 +602,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/PayStationClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="67" column="62" selection-start-line="67" selection-start-column="62" selection-end-line="67" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/PayStationClient.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -790,8 +694,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/PayStationImplementation.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="79" column="13" lean-forward="true" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
+        <state relative-caret-position="375">
+          <caret line="62" column="33" selection-start-line="62" selection-start-column="33" selection-end-line="62" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/PayStationClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="84" column="83" lean-forward="true" selection-start-line="84" selection-start-column="83" selection-end-line="84" selection-end-column="83" />
+          <folding>
+            <element signature="method#setupClientServerConnections#0;class#PayStationClient#0" />
+          </folding>
         </state>
       </provider>
     </entry>

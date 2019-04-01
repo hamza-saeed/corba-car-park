@@ -49,12 +49,12 @@ public class PayStationImplementation extends PayStationPOA {
         if (!lServerRef.vehicle_already_paid(carReg)) {
 
             if (lServerRef.vehicle_in_car_park(carReg)) {
-                //TODO: Check if Reg is in car park/duration etc.
+
                 if (lServerRef.vehicle_payment(carReg, machine_name(), (short) duration, amountPaid)) {
                     System.out.println("Car Reg:" + carReg + " paid.");
                     JOptionPane.showMessageDialog(null,
                             "Car Reg:" + carReg + " paid.",
-                            "Error", JOptionPane.INFORMATION_MESSAGE);
+                            "Paid", JOptionPane.INFORMATION_MESSAGE);
                     return true;
                 } else {
                     System.out.println("Payment failed");
@@ -80,10 +80,12 @@ public class PayStationImplementation extends PayStationPOA {
     @Override
     public double return_cash_total() {
         double total = 0;
+        //get current date
         LocalDate currentDate = LocalDate.now();
-
+        //loop through all log entries
         for (int i = 0; i < lServerRef.log().length; i++) {
             ParkingTransaction parkingTransaction = lServerRef.log()[i];
+            //add all payments received today.
             if ((parkingTransaction.event == EventType.Paid)) {
                 if (parkingTransaction.entryDate.day == currentDate.getDayOfMonth() &&
                         (parkingTransaction.entryDate.month == currentDate.getMonth().getValue()) &&
@@ -92,7 +94,7 @@ public class PayStationImplementation extends PayStationPOA {
                 }
             }
         }
-
+        //return total
         return total;
     }
 

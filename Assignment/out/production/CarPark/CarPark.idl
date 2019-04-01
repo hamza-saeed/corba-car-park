@@ -1,0 +1,95 @@
+module CarPark {
+
+    struct Date {
+        long day;
+        long month;
+        long year;
+    };
+
+    struct Time {
+        long hr;
+        long min;
+        long sec;
+    };
+
+    enum EventType {
+    Entered, Paid, Exited
+    };
+
+    struct ParkingTransaction {
+        Time entryTime;
+    	Date entryDate;
+    	string registration_number;
+    	EventType event;
+    	short hrsStay;
+    	double amountPaid;
+    	string paystationName;
+    };
+
+    struct Machine {
+        string name;
+        boolean enabled;
+    };
+
+        typedef sequence<ParkingTransaction> Log_of_parking_transactions;
+        typedef sequence<Machine> List_of_entryGates;
+        typedef sequence<Machine> List_of_exitGates;
+        typedef sequence<Machine> List_of_payStations;
+
+     interface  HQServer {
+        void raise_alarm(in ParkingTransaction transaction);
+        void register_local_server(in Machine machine);
+     };
+
+
+
+    interface  LocalServer {
+        readonly attribute string location;
+        readonly attribute Log_of_parking_transactions log;
+        readonly attribute List_of_entryGates listOfEntryGates;
+        readonly attribute List_of_payStations listOfPayStations;
+        readonly attribute List_of_exitGates listOfExitGates;
+        void registerLocalServer(in string machineName);
+        boolean vehicle_in(in string carReg);
+        boolean vehicle_out(in string reg);
+        boolean vehicle_payment(in string reg, in string paystationName, in short hrsStay, in double amountPaid);
+        boolean vehicle_in_car_park(in string registration_number);
+        boolean vehicle_already_paid(in string registration_number);
+        double return_cash_total();
+        void add_entry_gate(in Machine machine);
+        void add_exit_gate(in Machine machine);
+        void add_pay_station(in Machine machine);
+        void updateEntryGate(in string machineName, in boolean enabled);
+        void updatePayStation(in string machineName, in boolean enabled);
+        void updateExitGate(in string machineName, in boolean enabled);
+
+        };
+
+    interface  PayStation {
+        readonly attribute string machine_name;
+        void registerPaystation(in string machineName);
+        void toggleEnabled();
+        void reset();
+        boolean pay(in string carReg, in Date payDate, in Time payTime, in long duration, in double amountPaid);
+        double return_cash_total();
+    };
+
+
+    interface EntryGate {
+
+        readonly attribute string machine_name;
+        void registerGate(in string machineName);
+        void car_entered(in string reg);
+        void toggleEnabled();
+        void reset();
+    };
+
+    interface ExitGate {
+
+        readonly attribute string machine_name;
+        void registerGate(in string machineName);
+        void car_exited(in string reg);
+        void toggleEnabled();
+        void reset();
+        };
+};
