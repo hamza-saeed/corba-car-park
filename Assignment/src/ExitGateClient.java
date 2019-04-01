@@ -63,7 +63,8 @@ public class ExitGateClient extends JFrame {
             nameService.rebind(exitName, cref);
             //TODO: ADD IOR
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
-            exitImpl.registerGate(exitGateName,"000", localServer);
+            exitImpl.lServerRef = localServer;
+            exitImpl.registerGate(exitGateName);
 
             lblName.setText("Name: " + exitGateName);
             lblServer.setText("Server: " + serverName);
@@ -93,17 +94,8 @@ public class ExitGateClient extends JFrame {
             JOptionPane.showMessageDialog(null,"Exit Gate is disabled", "Error",JOptionPane.ERROR_MESSAGE);
             return;
         }
-        LocalDateTime a = LocalDateTime.now();
-        CarPark.Date date = new CarPark.Date();
-        Time time = new Time();
-        date.day = a.getDayOfMonth();
-        date.month = a.getMonth().getValue();
-        date.year = a.getYear();
-        time.hr = a.getHour();
-        time.min = a.getMinute();
-        time.sec = a.getSecond();
 
-        exitImpl.car_exited(txtReg.getText(),date,time);
+        exitImpl.car_exited(txtReg.getText());
 
     }
 

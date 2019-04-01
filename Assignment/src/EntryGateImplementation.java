@@ -2,6 +2,8 @@ import CarPark.*;
 
 import javax.swing.*;
 
+import java.sql.SQLOutput;
+
 import static CarPark.EventType.Entered;
 
 public class EntryGateImplementation extends EntryGatePOA {
@@ -15,72 +17,52 @@ public class EntryGateImplementation extends EntryGatePOA {
     }
 
     @Override
-    public void registerGate(String machineName, String ior, LocalServer LserverREF) {
+    public void registerGate(String machineName) {
+
+        //create new machine and set values
         machine = new Machine();
-        //set values
         machine.name = machineName;
-        machine.ior = ior;
         //enabled by default
         machine.enabled = true;
         //add the entry gate to the local server
-        LserverREF.add_entry_gate(machine);
-        lserverRef = LserverREF;
+        lserverRef.add_entry_gate(machine);
         System.out.println("Registered New Gate with name: " + machineName);
     }
 
     @Override
-    public void car_entered(String reg, Date date, Time time) {
+    public void car_entered(String reg) {
 
-        //if the vehicle is not already in the car park
+        //if method returns true, successful, if not, car is already in car park.
+        if (lserverRef.vehicle_in(reg))
+        {
+            JOptionPane.showMessageDialog(null, "Entry Successful");
 
-        if (!lserverRef.vehicle_in_car_park(reg)) {
-            //put date in string format
-            String dateStr = (date.day) + "/" + (date.month) + "/" + (date.year);
-            //add information to vehicle event
-            ParkingTransaction parkingTransaction = new ParkingTransaction();
-            parkingTransaction.registration_number = reg;
-            parkingTransaction.entryDate = date;
-            parkingTransaction.entryTime = time;
-            parkingTransaction.event = Entered;
-            //not set yet
-            parkingTransaction.paystationName="";
-            parkingTransaction.hrsStay=0;
-            parkingTransaction.amountPaid=0;
-            System.out.println("Car Entered with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
-            lserverRef.vehicle_in(parkingTransaction);
-            JOptionPane.showMessageDialog(null,
-                    "Entry Successful",
-                    "Enter", JOptionPane.INFORMATION_MESSAGE);
         }
-        else {
-            //TODO:  REPLACE ALL PRINTS WITH MESSAGEBOXES
-            JOptionPane.showMessageDialog(null,
-                    "Vehicle with registration '" + reg + "' is already in car park.",
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Vehicle with registration '" + reg + "' is already in car park.",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     @Override
     public void toggleEnabled() {
-        if (machine.enabled)
-        {
-            machine.enabled = false;
-            System.out.println("ENTRY GATE " + machine_name() + " WAS TURNED OFF");
-        }
-        else
-        {
-            machine.enabled = true;
-            System.out.println("ENTRY GATE " + machine_name() + "  WAS TURNED ON");
-        }
-        lserverRef.updateEntryGate(machine.name,machine.enabled);
+
+        //if on, turn off. if off, turn on.
+        machine.enabled = !machine.enabled;
+        System.out.println("Entry gate was turned " + (machine.enabled ? "on" : "off"));
+
+        //Updates in the server record
+        lserverRef.updateEntryGate(machine.name, machine.enabled);
 
     }
 
     @Override
     public void reset() {
+        //turn off and on
         machine.enabled = false;
         machine.enabled = true;
-        System.out.println("ENTRY GATE " + machine_name() + " WAS RESET");
+        System.out.println("Entry gate " + machine_name() + " was reset.");
     }
 
 }

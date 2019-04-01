@@ -64,7 +64,8 @@ public class PayStationClient extends JFrame {
             nameService.rebind(payName, cref);
 
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
-            payStationImpl.registerPaystation(payStationName,"000", localServer);
+            payStationImpl.lServerRef = localServer;
+            payStationImpl.registerPaystation(payStationName);
 
             lblName.setText("Name: " + payStationName);
             lblServer.setText("Server: " + serverName);
@@ -149,14 +150,6 @@ public class PayStationClient extends JFrame {
             ticketWindow.add(ticketPanel);
             ticketWindow.setVisible(true);
             ticketText.append(ticket.toString());
-//            Ticket newTicket = new Ticket();
-//            newTicket.registration_number = reg;
-//            newTicket.amountPaid = cost;
-//            newTicket.dateEntered = payDate;
-//            newTicket.timeEntered = payTime;
-//            newTicket.dateToLeave = expiryDate;
-//            newTicket.timeToLeave = expiryTime;
-//            payStationImpl.createTicket(newTicket);
             System.out.println("amountPaid:" + cost);
 
 

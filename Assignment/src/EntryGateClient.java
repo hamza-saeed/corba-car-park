@@ -15,7 +15,7 @@ public class EntryGateClient extends JFrame {
 
 
     public EntryGateClient() {
-
+        //Load GUI
         initComponents();
     }
 
@@ -28,27 +28,28 @@ public class EntryGateClient extends JFrame {
             }
         });
 
+        //set up client/server interaction
         setUpClientServerConnections(args);
 
     }
 
-    public static void setUpClientServerConnections(String[] args)
-    {
+    public static void setUpClientServerConnections(String[] args) {
+
+        //get the name of the entry gates and server to connect to
         String entryGateName = getArgs(args, "-Name");
-        String serverName = getArgs(args,"-LocalServer");
+        String serverName = getArgs(args, "-LocalServer");
 
         try {
+            //initialise orb
             ORB orb = ORB.init(args, null);
 
+            //get reference to name service
             org.omg.CORBA.Object nameServiceObject = orb.resolve_initial_references("NameService");
-            if (nameServiceObject == null)
-            {
+            if (nameServiceObject == null) {
                 System.out.println("nameServiceObject = null");
             }
-
             NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObject);
-            if (nameService == null)
-            {
+            if (nameService == null) {
                 System.out.println("nameService=null");
             }
 
@@ -61,7 +62,10 @@ public class EntryGateClient extends JFrame {
             nameService.rebind(entryName, cref);
 
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
-            entryImpl.registerGate(entryGateName,"000", localServer);
+            //set reference in entry gate implementation
+            entryImpl.lserverRef = localServer;
+            //register the gate with client.
+            entryImpl.registerGate(entryGateName);
 
             lblName.setText("Name: " + entryGateName);
             lblServer.setText("Server: " + serverName);
@@ -73,24 +77,17 @@ public class EntryGateClient extends JFrame {
     }
 
     private void btnEnterMouseClicked(java.awt.event.MouseEvent evt) {
-        if (!entryImpl.machine.enabled)
-        {
-            JOptionPane.showMessageDialog(null,"Entry Gate is disabled", "Error",JOptionPane.ERROR_MESSAGE);
+        if (!entryImpl.machine.enabled) {
+            JOptionPane.showMessageDialog(null, "Entry Gate is disabled", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        LocalDateTime a = LocalDateTime.now();
-        CarPark.Date date = new CarPark.Date();
-        Time time = new Time();
-        date.day = a.getDayOfMonth();
-        date.month = a.getMonth().getValue();
-        date.year = a.getYear();
-        time.hr = a.getHour();
-        time.min = a.getMinute();
-        time.sec = a.getSecond();
-        entryImpl.car_entered(txtReg.getText(),date,time);
+        entryImpl.car_entered(txtReg.getText());
     }
 
 
+    /*
+        Return the argument passed in corresponding to String var
+     */
     private static String getArgs(String[] args, String var) {
         for (int i = 0; i < args.length; i++) {
             String param = args[i];

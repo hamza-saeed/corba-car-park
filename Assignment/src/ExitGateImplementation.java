@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class ExitGateImplementation extends ExitGatePOA {
 
-    public Machine machine = new Machine();
+    public Machine machine;
     public LocalServer lServerRef;
 
     @Override
@@ -13,40 +13,28 @@ public class ExitGateImplementation extends ExitGatePOA {
     }
 
     @Override
-    public void registerGate(String machineName, String ior, LocalServer lserverRef) {
+    public void registerGate(String machineName) {
+        //create new machine and set values
+        machine = new Machine();
         machine.name = machineName;
-        machine.ior = ior;
         machine.enabled = true;
-        lserverRef.add_exit_gate(machine);
-        lServerRef = lserverRef;
-        System.out.println("Added: " + machineName + " with ior" + ior);
+        //add exit gate to localserver
+        lServerRef.add_exit_gate(machine);
+        System.out.println("Added: " + machineName);
     }
 
     @Override
-    public void car_exited(String reg, Date date, Time time) {
-        if (lServerRef.vehicle_in_car_park(reg)) {
-            String dateStr = Integer.toString(date.day) + "/" + Integer.toString(date.month) + "/" + Integer.toString(date.year);
-            ParkingTransaction parkingTransaction = new ParkingTransaction();
-            parkingTransaction.registration_number = reg;
-            parkingTransaction.entryDate = date;
-            parkingTransaction.entryTime = time;
-            parkingTransaction.event = EventType.Exited;
-            //only needed for pay events
-            parkingTransaction.amountPaid=0;
-            parkingTransaction.hrsStay=0;
-            parkingTransaction.paystationName="";
-            System.out.println("Car Exited with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
-            lServerRef.vehicle_out(reg);
+    public void car_exited(String reg) {
+
+        if (lServerRef.vehicle_out(reg))
+        {
             JOptionPane.showMessageDialog(null,
-                    "Exit successful",
-                    "Exit", JOptionPane.INFORMATION_MESSAGE);
-
-
+                    "Exit successful","Exit", JOptionPane.INFORMATION_MESSAGE);
         }
-        else {
+        else
+        {
             JOptionPane.showMessageDialog(null,
-                    "Vehicle with registration '" + reg + "' is NOT in car park.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Vehicle with registration '" + reg + "' is NOT in car park.","Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

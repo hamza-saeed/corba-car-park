@@ -45,7 +45,8 @@ public class LServer extends JFrame {
             nameService.rebind(lserverName, cref);
 
             HQServer hqRef = HQServerHelper.narrow(nameService.resolve_str("HQConn"));
-            lserverimpl.registerLocalServer(localServerName,"000",hqRef);
+            lserverimpl.HQRef = hqRef;
+            lserverimpl.registerLocalServer(localServerName);
 
             System.out.println("Server started...");
             orb.run();

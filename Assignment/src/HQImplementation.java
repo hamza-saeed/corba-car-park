@@ -7,10 +7,13 @@ import java.util.ArrayList;
 public class HQImplementation extends HQServerPOA {
 
     public ArrayList<Machine> listOfLocalServers = new ArrayList<Machine>();
+    public ArrayList<ParkingTransaction> listOfAlerts = new ArrayList<ParkingTransaction>();
+
+
 
     @Override
     public void raise_alarm(ParkingTransaction transaction) {
-
+        listOfAlerts.add(transaction);
     }
 
     @Override

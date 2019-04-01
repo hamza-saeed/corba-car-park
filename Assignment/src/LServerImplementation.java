@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import static CarPark.EventType.Entered;
+
 public class LServerImplementation extends LocalServerPOA {
 
     public ArrayList<ParkingTransaction> logOfParkingTransactions = new ArrayList<ParkingTransaction>();
@@ -50,68 +52,115 @@ public class LServerImplementation extends LocalServerPOA {
 
 
     @Override
-    public void registerLocalServer(String machineName, String iorVal,HQServer hqRef) {
+    public void registerLocalServer(String machineName) {
         machine = new Machine();
         machine.name = machineName;
-        machine.ior = iorVal;
         machine.enabled = true;
-        hqRef.register_local_server(machine);
-        HQRef = hqRef;
-        System.out.println("Added: " + machineName + " with ior" + iorVal);
+        HQRef.register_local_server(machine);
+        System.out.println("Added: " + machineName);
 
     }
 
 
     @Override
-    public void vehicle_in(ParkingTransaction transaction) {
+    public boolean vehicle_in(String reg) {
 
-        logOfParkingTransactions.add(transaction);
-        System.out.println("Size after addition: " + logOfParkingTransactions.size());
-    }
-
-    @Override
-    public void vehicle_out(String reg) {
-
-        for (int i =0; i < logOfParkingTransactions.size();i++) {
-            ParkingTransaction parkingTransaction = logOfParkingTransactions.get(i);
-
-            if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Entered))
-            {
-                System.out.println("unpaid");
-            }
-            else if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Exited))
-            {
-                //They aren't even here?!
-            }
-            else if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Paid))
-            {
-                LocalDateTime dateTime = LocalDateTime.now();
-
-                //LocalDateTime of when car entered
-                LocalDateTime entry = LocalDateTime.of(parkingTransaction.entryDate.year,parkingTransaction.entryDate.month,
-                        parkingTransaction.entryDate.day,parkingTransaction.entryTime.hr,parkingTransaction.entryTime.min
-                ,parkingTransaction.entryTime.sec);
-
-                //adding number of hours payed for
-                LocalDateTime expiry = entry.plusHours(parkingTransaction.hrsStay);
-
-                //adding five minutes grace period
-                expiry = expiry.plusMinutes(5);
-
-                if (dateTime.isAfter(expiry))
-                {
-                    //raise alarm. they've been here too long.
-                    System.out.println("alarm triggered");
-
-                }
-                else
-                {
-                    logOfParkingTransactions.get(i).event = EventType.Exited;
-                    System.out.println("Successfully exited");
-                }
-            }
-
+        if (vehicle_in_car_park(reg))
+        {
+            return false;
         }
+        else
+        {
+            //date and time
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            CarPark.Date date = new CarPark.Date();
+            Time time = new Time();
+            date.day = currentDateTime.getDayOfMonth();
+            date.month = currentDateTime.getMonth().getValue();
+            date.year = currentDateTime.getYear();
+            time.hr = currentDateTime.getHour();
+            time.min = currentDateTime.getMinute();
+            time.sec = currentDateTime.getSecond();
+
+            //create new Parking Transaction
+            ParkingTransaction newTransaction = new ParkingTransaction();
+            newTransaction.registration_number = reg;
+            newTransaction.entryDate = date;
+            newTransaction.entryTime = time;
+            newTransaction.event = Entered;
+            //not set yet
+            newTransaction.paystationName = "";
+            newTransaction.hrsStay = 0;
+            newTransaction.amountPaid = 0;
+            logOfParkingTransactions.add(newTransaction);
+            return true;
+        }
+    }
+
+    @Override
+    public boolean vehicle_out(String reg) {
+
+        //check to ensure car is in carpark
+        if (vehicle_in_car_park(reg)) {
+
+            //find the correct transaction
+            for (int i = 0; i < logOfParkingTransactions.size(); i++) {
+                ParkingTransaction parkingTransaction = logOfParkingTransactions.get(i);
+                if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Entered)) {
+
+                    //give 5 minute grace period
+                    LocalDateTime gracePeriod = LocalDateTime.of(parkingTransaction.entryDate.year, parkingTransaction.entryDate.month, parkingTransaction.entryDate.day,
+                                parkingTransaction.entryTime.hr,parkingTransaction.entryTime.min, parkingTransaction.entryTime.sec).plusMinutes(5);
+                    LocalDateTime currentDateTime = LocalDateTime.now();
+                    //if they're trying to leave after grace period raise alarm
+                    if (currentDateTime.isAfter(gracePeriod))
+                    {
+                        //raise alarm but allow them to leave
+                        //TODO: pass overdue time.
+                        HQRef.raise_alarm(parkingTransaction);
+                        logOfParkingTransactions.get(i).event = EventType.Exited;
+                        return true;
+                    }
+                    else
+                    {
+                        //they can leave
+                        logOfParkingTransactions.get(i).event = EventType.Exited;
+                        return true;
+                    }
+                }
+                else if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Paid)) {
+                    LocalDateTime dateTime = LocalDateTime.now();
+
+                    //LocalDateTime of when car entered
+                    LocalDateTime entry = LocalDateTime.of(parkingTransaction.entryDate.year, parkingTransaction.entryDate.month,
+                            parkingTransaction.entryDate.day, parkingTransaction.entryTime.hr, parkingTransaction.entryTime.min
+                            , parkingTransaction.entryTime.sec);
+
+                    //adding number of hours payed for
+                    LocalDateTime expiry = entry.plusHours(parkingTransaction.hrsStay);
+
+                    //adding five minutes grace period
+                    expiry = expiry.plusMinutes(5);
+                    //if
+                    if (dateTime.isAfter(expiry)) {
+                        //raise alarm but allow them to leave
+                        //TODO: pass overdue time.
+                        HQRef.raise_alarm(parkingTransaction);
+                        logOfParkingTransactions.get(i).event = EventType.Exited;
+                        return true;
+
+                    } else {
+                        logOfParkingTransactions.get(i).event = EventType.Exited;
+                        return true;
+                    }
+                }
+            }
+        } else
+        {
+            //car is NOT in entry gate.
+            return false;
+        }
+        return false;
     }
 
     @Override
