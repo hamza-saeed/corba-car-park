@@ -1,11 +1,12 @@
 import CarPark.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class LServerImplementation extends LocalServerPOA {
 
-    public ArrayList<VehicleEvent> logOfVehicleEvents = new ArrayList<VehicleEvent>();
+    public ArrayList<ParkingTransaction> logOfParkingTransactions = new ArrayList<ParkingTransaction>();
     public ArrayList<Machine> listOfEntryGates = new ArrayList<Machine>();
     public ArrayList<Machine> listOfExitGates = new ArrayList<Machine>();
     public ArrayList<Machine> listOfPayStations = new ArrayList<Machine>();
@@ -19,10 +20,10 @@ public class LServerImplementation extends LocalServerPOA {
     }
 
     @Override
-    public VehicleEvent[] log() {
-        VehicleEvent[] vehicleEvents = new VehicleEvent[logOfVehicleEvents.size()];
-        logOfVehicleEvents.toArray(vehicleEvents);
-        return vehicleEvents;
+    public ParkingTransaction[] log() {
+        ParkingTransaction[] parkingTransactions = new ParkingTransaction[logOfParkingTransactions.size()];
+        logOfParkingTransactions.toArray(parkingTransactions);
+        return parkingTransactions;
     }
 
     @Override
@@ -62,40 +63,80 @@ public class LServerImplementation extends LocalServerPOA {
 
 
     @Override
-    public void vehicle_in(VehicleEvent event) {
+    public void vehicle_in(ParkingTransaction transaction) {
 
-        logOfVehicleEvents.add(event);
-        System.out.println("Size after addition: " + logOfVehicleEvents.size());
+        logOfParkingTransactions.add(transaction);
+        System.out.println("Size after addition: " + logOfParkingTransactions.size());
     }
 
     @Override
-    public void vehicle_out(VehicleEvent event) {
-        logOfVehicleEvents.add(event);
-        //TODO: Write Event
+    public void vehicle_out(String reg) {
+
+        for (int i =0; i < logOfParkingTransactions.size();i++) {
+            ParkingTransaction parkingTransaction = logOfParkingTransactions.get(i);
+
+            if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Entered))
+            {
+                System.out.println("unpaid");
+            }
+            else if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Exited))
+            {
+                //They aren't even here?!
+            }
+            else if (parkingTransaction.registration_number.equals(reg) && (parkingTransaction.event == EventType.Paid))
+            {
+                LocalDateTime dateTime = LocalDateTime.now();
+
+                //LocalDateTime of when car entered
+                LocalDateTime entry = LocalDateTime.of(parkingTransaction.entryDate.year,parkingTransaction.entryDate.month,
+                        parkingTransaction.entryDate.day,parkingTransaction.entryTime.hr,parkingTransaction.entryTime.min
+                ,parkingTransaction.entryTime.sec);
+
+                //adding number of hours payed for
+                LocalDateTime expiry = entry.plusHours(parkingTransaction.hrsStay);
+
+                //adding five minutes grace period
+                expiry = expiry.plusMinutes(5);
+
+                if (dateTime.isAfter(expiry))
+                {
+                    //raise alarm. they've been here too long.
+                    System.out.println("alarm triggered");
+
+                }
+                else
+                {
+                    logOfParkingTransactions.get(i).event = EventType.Exited;
+                    System.out.println("Successfully exited");
+                }
+            }
+
+        }
     }
 
     @Override
-    public boolean vehicle_paid(VehicleEvent event) {
-        logOfVehicleEvents.add(event);
-        return true;
+    public boolean vehicle_payment(String reg, String paystationName, short hrsStay, double amountPaid) {
+        for (int i =0; i < logOfParkingTransactions.size();i++)
+        {
+            ParkingTransaction parkingTransaction = logOfParkingTransactions.get(i);
+            if ((parkingTransaction.registration_number.equals(reg)) && (parkingTransaction.event == EventType.Entered))
+            {
+                logOfParkingTransactions.get(i).paystationName = paystationName;
+                logOfParkingTransactions.get(i).hrsStay = hrsStay;
+                logOfParkingTransactions.get(i).amountPaid = amountPaid;
+                logOfParkingTransactions.get(i).event = EventType.Paid;
+                return true;
+            }
+        }
+        return false;
     }
-//
-//    @Override
-//    public boolean add_Ticket(Ticket newTicket) {
-//        try {
-//            listOfTickets.add(newTicket);
-//            return true;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
+
 
     @Override
     public boolean vehicle_in_car_park(String registration_number) {
 
-        for (int i = 0; i < logOfVehicleEvents.size(); i++) {
-            VehicleEvent currentEvent = logOfVehicleEvents.get(i);
+        for (int i = 0; i < logOfParkingTransactions.size(); i++) {
+            ParkingTransaction currentEvent = logOfParkingTransactions.get(i);
             if ((currentEvent.registration_number.equals(registration_number)) && ((currentEvent.event == EventType.Entered) || (currentEvent.event == EventType.Paid))) {
                 return true;
             }
@@ -105,8 +146,8 @@ public class LServerImplementation extends LocalServerPOA {
 
     @Override
     public boolean vehicle_already_paid(String registration_number) {
-        for (int i = 0; i < logOfVehicleEvents.size(); i++) {
-            VehicleEvent currentEvent = logOfVehicleEvents.get(i);
+        for (int i = 0; i < logOfParkingTransactions.size(); i++) {
+            ParkingTransaction currentEvent = logOfParkingTransactions.get(i);
             if ((currentEvent.registration_number.equals(registration_number)) && (currentEvent.event == EventType.Paid)) {
                 return true;
             }
@@ -119,16 +160,16 @@ public class LServerImplementation extends LocalServerPOA {
         double total = 0;
         LocalDate currentDate = LocalDate.now();
 
-        for (int i=0; i < logOfVehicleEvents.size();i++)
+        for (int i = 0; i < logOfParkingTransactions.size(); i++)
         {
-            VehicleEvent vEvent = logOfVehicleEvents.get(i);
-            if (vEvent.event == EventType.Paid)
+            ParkingTransaction parkingTransaction = logOfParkingTransactions.get(i);
+            if (parkingTransaction.event == EventType.Paid)
             {
-                if (vEvent.date.day == currentDate.getDayOfMonth() &&
-                        (vEvent.date.month == currentDate.getMonth().getValue()) &&
-                        (vEvent.date.year == currentDate.getYear()))
+                if (parkingTransaction.entryDate.day == currentDate.getDayOfMonth() &&
+                        (parkingTransaction.entryDate.month == currentDate.getMonth().getValue()) &&
+                        (parkingTransaction.entryDate.year == currentDate.getYear()))
                 {
-                    total +=(double) vEvent.amountPaid;
+                    total +=(double) parkingTransaction.amountPaid;
                 }
             }
         }

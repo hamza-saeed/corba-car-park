@@ -37,17 +37,17 @@ public class EntryGateImplementation extends EntryGatePOA {
             //put date in string format
             String dateStr = (date.day) + "/" + (date.month) + "/" + (date.year);
             //add information to vehicle event
-            VehicleEvent vehicleEvent = new VehicleEvent();
-            vehicleEvent.registration_number = reg;
-            vehicleEvent.date = date;
-            vehicleEvent.time = time;
-            vehicleEvent.event = Entered;
-            //only needed for pay events
-            vehicleEvent.paystationName="";
-            vehicleEvent.hrsStay=0;
-            vehicleEvent.amountPaid=0;
+            ParkingTransaction parkingTransaction = new ParkingTransaction();
+            parkingTransaction.registration_number = reg;
+            parkingTransaction.entryDate = date;
+            parkingTransaction.entryTime = time;
+            parkingTransaction.event = Entered;
+            //not set yet
+            parkingTransaction.paystationName="";
+            parkingTransaction.hrsStay=0;
+            parkingTransaction.amountPaid=0;
             System.out.println("Car Entered with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
-            lserverRef.vehicle_in(vehicleEvent);
+            lserverRef.vehicle_in(parkingTransaction);
             JOptionPane.showMessageDialog(null,
                     "Entry Successful",
                     "Enter", JOptionPane.INFORMATION_MESSAGE);

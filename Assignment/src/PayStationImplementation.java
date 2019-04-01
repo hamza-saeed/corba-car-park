@@ -69,18 +69,11 @@ public class PayStationImplementation extends PayStationPOA {
 
     @Override
     public boolean pay(String carReg, Date payDate, Time payTime, int duration, double amountPaid) {
-        VehicleEvent payEvent = new VehicleEvent();
-        payEvent.registration_number = carReg;
-        payEvent.time=payTime;
-        payEvent.date=payDate;
-        payEvent.event = EventType.Paid;
-        payEvent.amountPaid=amountPaid;
-        payEvent.paystationName=machine_name();
-        payEvent.hrsStay = (short)duration;
+
         if (!lServerRef.vehicle_already_paid(carReg)) {
             if (lServerRef.vehicle_in_car_park(carReg)) {
                 //TODO: Check if Reg is in car park/duration etc.
-                if (lServerRef.vehicle_paid(payEvent)) {
+                if (lServerRef.vehicle_payment(carReg,machine_name(),(short)duration,amountPaid)) {
                     System.out.println("Car Reg:" + carReg + " paid.");
                     JOptionPane.showMessageDialog(null,
                             "Car Reg:" + carReg + " paid.",
@@ -115,14 +108,14 @@ public class PayStationImplementation extends PayStationPOA {
 
         for (int i=0; i < lServerRef.log().length;i++)
         {
-            VehicleEvent vEvent = lServerRef.log()[i];
-            if (vEvent.event == EventType.Paid)
+            ParkingTransaction parkingTransaction = lServerRef.log()[i];
+            if ((parkingTransaction.event == EventType.Paid))
             {
-                if (vEvent.date.day == currentDate.getDayOfMonth() &&
-                        (vEvent.date.month == currentDate.getMonth().getValue()) &&
-                        (vEvent.date.year == currentDate.getYear()) && (vEvent.paystationName.equals(machine_name())))
+                if (parkingTransaction.entryDate.day == currentDate.getDayOfMonth() &&
+                        (parkingTransaction.entryDate.month == currentDate.getMonth().getValue()) &&
+                        (parkingTransaction.entryDate.year == currentDate.getYear()) && (parkingTransaction.paystationName.equals(machine_name())))
                 {
-                    total +=(double) vEvent.amountPaid;
+                    total +=(double) parkingTransaction.amountPaid;
                 }
             }
         }

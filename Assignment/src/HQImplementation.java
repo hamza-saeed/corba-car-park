@@ -1,7 +1,6 @@
 import CarPark.HQServerPOA;
-import CarPark.LocalServer;
 import CarPark.Machine;
-import CarPark.VehicleEvent;
+import CarPark.ParkingTransaction;
 
 import java.util.ArrayList;
 
@@ -10,7 +9,7 @@ public class HQImplementation extends HQServerPOA {
     public ArrayList<Machine> listOfLocalServers = new ArrayList<Machine>();
 
     @Override
-    public void raise_alarm(VehicleEvent event) {
+    public void raise_alarm(ParkingTransaction transaction) {
 
     }
 

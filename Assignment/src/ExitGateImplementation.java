@@ -26,17 +26,17 @@ public class ExitGateImplementation extends ExitGatePOA {
     public void car_exited(String reg, Date date, Time time) {
         if (lServerRef.vehicle_in_car_park(reg)) {
             String dateStr = Integer.toString(date.day) + "/" + Integer.toString(date.month) + "/" + Integer.toString(date.year);
-            VehicleEvent vehicleEvent = new VehicleEvent();
-            vehicleEvent.registration_number = reg;
-            vehicleEvent.date = date;
-            vehicleEvent.time = time;
-            vehicleEvent.event = EventType.Exited;
+            ParkingTransaction parkingTransaction = new ParkingTransaction();
+            parkingTransaction.registration_number = reg;
+            parkingTransaction.entryDate = date;
+            parkingTransaction.entryTime = time;
+            parkingTransaction.event = EventType.Exited;
             //only needed for pay events
-            vehicleEvent.amountPaid=0;
-            vehicleEvent.hrsStay=0;
-            vehicleEvent.paystationName="";
+            parkingTransaction.amountPaid=0;
+            parkingTransaction.hrsStay=0;
+            parkingTransaction.paystationName="";
             System.out.println("Car Exited with reg: " + reg + ". Date: " + dateStr + ". Time: " + (time.hr + ":") + (time.min + ":") + time.sec);
-            lServerRef.vehicle_out(vehicleEvent);
+            lServerRef.vehicle_out(reg);
             JOptionPane.showMessageDialog(null,
                     "Exit successful",
                     "Exit", JOptionPane.INFORMATION_MESSAGE);

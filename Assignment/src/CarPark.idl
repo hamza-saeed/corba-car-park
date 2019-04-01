@@ -16,9 +16,9 @@ module CarPark {
     Entered, Paid, Exited
     };
 
-    struct VehicleEvent {
-        Time time;
-    	Date date;
+    struct ParkingTransaction {
+        Time entryTime;
+    	Date entryDate;
     	string registration_number;
     	EventType event;
     	short hrsStay;
@@ -26,29 +26,19 @@ module CarPark {
     	string paystationName;
     };
 
-//    struct Ticket {
-//        string registration_number;
-//        double amountPaid;
-//        Date dateEntered;
-//        Time timeEntered;
-//        Date dateToLeave;
-//        Time timeToLeave;
-//    };
-
     struct Machine {
         string name;
         string ior;
         boolean enabled;
     };
 
-        typedef sequence<VehicleEvent> Log_of_vehicle_events;
-//        typedef sequence<Ticket> Log_of_tickets;
+        typedef sequence<ParkingTransaction> Log_of_parking_transactions;
         typedef sequence<Machine> List_of_entryGates;
         typedef sequence<Machine> List_of_exitGates;
         typedef sequence<Machine> List_of_payStations;
 
      interface  HQServer {
-        void raise_alarm(in VehicleEvent event);
+        void raise_alarm(in ParkingTransaction transaction);
         void register_local_server(in Machine machine);
      };
 
@@ -56,15 +46,14 @@ module CarPark {
 
     interface  LocalServer {
         readonly attribute string location;
-        readonly attribute Log_of_vehicle_events log;
+        readonly attribute Log_of_parking_transactions log;
         readonly attribute List_of_entryGates listOfEntryGates;
         readonly attribute List_of_payStations listOfPayStations;
         readonly attribute List_of_exitGates listOfExitGates;
         void registerLocalServer(in string machineName, in string ior, in HQServer hqRef);
-        void vehicle_in(in VehicleEvent event);
-        void vehicle_out(in VehicleEvent event);
-        boolean vehicle_paid(in VehicleEvent event);
-//        boolean add_Ticket(in Ticket newTicket);
+        void vehicle_in(in ParkingTransaction transaction);
+        void vehicle_out(in string reg);
+        boolean vehicle_payment(in string reg, in string paystationName, in short hrsStay, in double amountPaid);
         boolean vehicle_in_car_park(in string registration_number);
         boolean vehicle_already_paid(in string registration_number);
         double return_cash_total();
@@ -83,7 +72,6 @@ module CarPark {
         void toggleEnabled();
         void reset();
         boolean checkVehicleInCarPark(in string carReg);
-//        boolean createTicket(in Ticket newTicket);
         boolean pay(in string carReg, in Date payDate, in Time payTime, in long duration, in double amountPaid);
         double return_cash_total();
     };
@@ -98,13 +86,12 @@ module CarPark {
         void reset();
     };
 
-        interface ExitGate {
+    interface ExitGate {
 
-            readonly attribute string machine_name;
-            void registerGate(in string machineName, in string ior, in LocalServer lserverRef);
-            void car_exited(in string reg, in Date date, in Time time);
+        readonly attribute string machine_name;
+        void registerGate(in string machineName, in string ior, in LocalServer lserverRef);
+        void car_exited(in string reg, in Date date, in Time time);
         void toggleEnabled();
-            void reset();
-
+        void reset();
         };
 };
