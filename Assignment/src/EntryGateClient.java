@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 public class EntryGateClient extends JFrame {
 
-    static EntryGateImplementation entryImpl = new EntryGateImplementation();
+    private static EntryGateImplementation entryImpl = new EntryGateImplementation();
 
 
     public EntryGateClient() {
@@ -35,15 +35,19 @@ public class EntryGateClient extends JFrame {
 
     public static void setUpClientServerConnections(String[] args) {
 
-        //get the name of the entry gates and server to connect to
+        //get the name of the entry gate and server to connect to
         String entryGateName = getArgs(args, "-Name");
         String serverName = getArgs(args, "-LocalServer");
 
         try {
-            //initialise orb
+            // create and initialize the ORB
             ORB orb = ORB.init(args, null);
 
-            //get reference to name service
+            // get reference to rootpoa & activate the POAManager
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
+
+            //get reference to naming service
             org.omg.CORBA.Object nameServiceObject = orb.resolve_initial_references("NameService");
             if (nameServiceObject == null) {
                 System.out.println("nameServiceObject = null");
@@ -53,46 +57,55 @@ public class EntryGateClient extends JFrame {
                 System.out.println("nameService=null");
             }
 
-            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootpoa.the_POAManager().activate();
-
+            //resolve the LocalService object reference in the naming service
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
+
             //set reference in entry gate implementation
             entryImpl.lserverRef = localServer;
 
+            //only continue if the set name is unique
             if (localServer.isEntryNameUnique(entryGateName)) {
 
+                //register the gate with local server.
                 entryImpl.registerGate(entryGateName);
 
-                //register the gate with client.
+                //get object reference from the servant
                 org.omg.CORBA.Object ref = rootpoa.servant_to_reference(entryImpl);
                 EntryGate cref = EntryGateHelper.narrow(ref);
+
+                //bind the object in the naming service
                 NameComponent[] entryName = nameService.to_name(entryGateName);
                 nameService.rebind(entryName, cref);
 
-
-
+                //set labels to show entry gate name and connected server
                 lblName.setText("Name: " + entryGateName);
                 lblServer.setText("Server: " + serverName);
 
+                //  wait for invocations from clients
                 orb.run();
-            }
-            else
-            {
-                JOptionPane.showMessageDialog(null,"Entry gate name must be unique");
+            } else {
+                //error message telling user names must be unique
+                JOptionPane.showMessageDialog(null, "Entry gate name must be unique");
                 return;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //can't connect to server
+            JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            System.out.println(e);
         }
     }
 
     private void btnEnterMouseClicked(java.awt.event.MouseEvent evt) {
+        //if entry gate is not enabled, show error msg and don't continue.
         if (!entryImpl.machine.enabled) {
             JOptionPane.showMessageDialog(null, "Entry Gate is disabled", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        //car entering
         entryImpl.car_entered(txtReg.getText());
+
+        //clear screen for next customer
+        txtReg.setText("");
     }
 
 

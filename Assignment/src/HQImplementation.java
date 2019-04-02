@@ -13,18 +13,21 @@ public class HQImplementation extends HQServerPOA {
 
     @Override
     public void raise_alarm(ParkingTransaction transaction) {
+        //add transaction to the list of alerts
         listOfAlerts.add(transaction);
     }
 
     @Override
     public void register_local_server(Machine machine) {
-        System.out.println(machine.name);
+        //add local server to list of local servers
         listOfLocalServers.add(machine);
     }
 
     @Override
     public boolean isLocalServerNameUnique(String name) {
         boolean unique = true;
+        //if any of the machines in arraylist have the same name
+        //false will be returned
         for (Machine lServers : listOfLocalServers)
         {
             if (lServers.name.equals(name))

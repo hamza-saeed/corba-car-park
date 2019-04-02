@@ -2,6 +2,7 @@ import CarPark.*;
 
 import javax.swing.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class PayStationImplementation extends PayStationPOA {
 
@@ -44,37 +45,54 @@ public class PayStationImplementation extends PayStationPOA {
     }
 
     @Override
-    public boolean pay(String carReg, int duration, double amountPaid) {
+    public void pay(String carReg, int duration, double amountPaid) {
 
-        if (!lServerRef.vehicle_already_paid(carReg)) {
-
-            if (lServerRef.vehicle_in_car_park(carReg)) {
-
-                if (lServerRef.vehicle_payment(carReg, machine_name(), (short) duration, amountPaid)) {
-                    System.out.println("Car Reg:" + carReg + " paid.");
-                    JOptionPane.showMessageDialog(null,
-                            "Car Reg:" + carReg + " paid.",
-                            "Paid", JOptionPane.INFORMATION_MESSAGE);
-                    return true;
-                } else {
-                    System.out.println("Payment failed");
-                    JOptionPane.showMessageDialog(null,
-                            "Payment failed",
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            } else {
-                JOptionPane.showMessageDialog(null,
-                        "Vehicle with registration '" + carReg + "' is NOT in car park.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-        } else {
+        //only continue if ticket has not been paid
+        if (lServerRef.vehicle_already_paid(carReg)) {
             JOptionPane.showMessageDialog(null,
-                    "Ticket has already been paid.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+                    "Ticket has already been paid.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        //only continue if vehicle is in carPark
+        if (!lServerRef.vehicle_in_car_park(carReg)) {
+            JOptionPane.showMessageDialog(null,
+                    "Vehicle with registration '" + carReg + "' is NOT in car park.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        //register payment
+        if (lServerRef.vehicle_payment(carReg, machine_name(), (short) duration, amountPaid)) {
+            System.out.println("Car Reg:" + carReg + " paid.");
+            JOptionPane.showMessageDialog(null,
+                    "Car Reg:" + carReg + " paid.", "Paid", JOptionPane.INFORMATION_MESSAGE);
+
+            //get the entry time and calculate the expiry time
+            ParkingTransaction transaction = lServerRef.getParkingTransaction(carReg);
+            LocalDateTime entryDateTime = LocalDateTime.of(transaction.entryDate.year, transaction.entryDate.month,
+                    transaction.entryDate.day, transaction.entryTime.hr, transaction.entryTime.min, transaction.entryTime.sec);
+            LocalDateTime expiry = entryDateTime.plusHours((long) duration);
+
+            //Display a ticket to the user showing car reg, amount payed, time entered and time to leave by.
+            JTextArea ticket = new JTextArea();
+            ticket.append("Car Reg: " + carReg + "\n");
+            ticket.append("Amount Paid: £" + amountPaid + "\n");
+            ticket.append("Entered: " + entryDateTime.getDayOfMonth() + "/" + entryDateTime.getMonth().getValue() + "/" + entryDateTime.getYear() + " ");
+            ticket.append(entryDateTime.getHour() + ":" + entryDateTime.getMinute() + ":" + entryDateTime.getSecond() + "\n");
+            ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" + expiry.getYear() + " ");
+            ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
+            JOptionPane.showMessageDialog(null, new JScrollPane(ticket), "Ticket",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } else {
+            //should never happen in theory
+            JOptionPane.showMessageDialog(null,
+                    "Error locating transaction",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+
     }
 
     @Override

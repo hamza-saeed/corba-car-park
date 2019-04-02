@@ -17,22 +17,12 @@ public class HQ extends JFrame {
     static NamingContextExt nameService;
 
     public HQ() {
+
+        //Load GUI
         initComponents();
-        addListeners();
-        serverModel = (DefaultTableModel) tableServers.getModel();
-        entryModel = (DefaultTableModel) tableEntryGates.getModel();
-        payStationModel = (DefaultTableModel) tablePayStations.getModel();
-        exitModel = (DefaultTableModel) tableExitGates.getModel();
-        carModel = (DefaultTableModel) tableCars.getModel();
-        alertModel = (DefaultTableModel) tableAlerts.getModel();
 
-        tableServers.getTableHeader().setReorderingAllowed(false);
-        tableEntryGates.getTableHeader().setReorderingAllowed(false);
-        tablePayStations.getTableHeader().setReorderingAllowed(false);
-        tableExitGates.getTableHeader().setReorderingAllowed(false);
-        tableCars.getTableHeader().setReorderingAllowed(false);
-        tableAlerts.getTableHeader().setReorderingAllowed(false);
-
+        // Add listeners to JTables and initialise the DefaultTableModels
+        addListenersAndInitialiseModels();
     }
 
     public static void main(String args[]) {
@@ -43,11 +33,15 @@ public class HQ extends JFrame {
                 new HQ().setVisible(true);
             }
         });
+
+        //set up client/server interaction
         setupClientServerConnections(args);
     }
 
     private void btnRefreshServersActionPerformed(java.awt.event.ActionEvent evt) {
+        //clear previous entries
         serverModel.setRowCount(0);
+        //load table will list of local servers
         for (Machine machine : hqImpl.listOfLocalServers) {
             serverModel.addRow(new String[]{machine.name});
         }
@@ -55,11 +49,19 @@ public class HQ extends JFrame {
 
     private void btnToggleEntryActionPerformed(java.awt.event.ActionEvent evt) {
         try {
+            //if a value is selected in the JTable
             if (tableEntryGates.getSelectedRow() != -1) {
+
+                //get the selected entry gate name
                 String serverName = tableEntryGates.getValueAt(tableEntryGates.getSelectedRow(), 0).toString();
+
+                //resolve the Entry Gate object reference in the naming service
                 EntryGate entryRef = EntryGateHelper.narrow(nameService.resolve_str(serverName));
 
+                //call the toggle enabled method
                 entryRef.toggleEnabled();
+
+                //call method to update all tables
                 updateTables();
 
             } else {
@@ -72,11 +74,19 @@ public class HQ extends JFrame {
 
     private void btnTogglePaystationActionPerformed(java.awt.event.ActionEvent evt) {
         try {
+            //if a value is selected in the JTable
             if (tablePayStations.getSelectedRow() != -1) {
+
+                //get the selected paystation name
                 String serverName = tablePayStations.getValueAt(tablePayStations.getSelectedRow(), 0).toString();
+
+                //resolve the paystation object reference in the naming service
                 PayStation payStationRef = PayStationHelper.narrow(nameService.resolve_str(serverName));
 
+                //call the toggle enabled method
                 payStationRef.toggleEnabled();
+
+                //call method to update all tables
                 updateTables();
 
 
@@ -90,10 +100,19 @@ public class HQ extends JFrame {
 
     private void btnToggleExitActionPerformed(java.awt.event.ActionEvent evt) {
         try {
+            //if a value is selected in the JTable
             if (tableExitGates.getSelectedRow() != -1) {
+
+                //get the selected exit gate name
                 String serverName = tableExitGates.getValueAt(tableExitGates.getSelectedRow(), 0).toString();
+
+                //resolve the exit gate object reference in the naming service
                 ExitGate exitRef = ExitGateHelper.narrow(nameService.resolve_str(serverName));
+
+                //call the toggle enabled method
                 exitRef.toggleEnabled();
+
+                //call method to update all tables
                 updateTables();
             } else {
                 JOptionPane.showMessageDialog(null, "No selected exit gate");
@@ -105,7 +124,9 @@ public class HQ extends JFrame {
 
     private void tableServersSelectionChange(javax.swing.event.ListSelectionEvent evt) {
         if (evt.getValueIsAdjusting()) {
+            //reset cash total
             lblPaystationCashTotal.setText("");
+            //update all tables method
             updateTables();
         }
     }
@@ -113,9 +134,16 @@ public class HQ extends JFrame {
     private void tablePaystationsSelectionChange(javax.swing.event.ListSelectionEvent evt) {
         try {
             if (evt.getValueIsAdjusting()) {
+                //if value is selected in table
                 if (tablePayStations.getSelectedRow() != -1) {
+
+                    //get the selected paystation name
                     String serverName = tablePayStations.getValueAt(tablePayStations.getSelectedRow(), 0).toString();
+
+                    //resolve the paystation object reference in the naming service
                     PayStation payStationRef = PayStationHelper.narrow(nameService.resolve_str(serverName));
+
+                    //Show total cash today from selected paystation
                     lblPaystationCashTotal.setText("Cash Total Today: £" + payStationRef.return_cash_total());
                 } else {
                     lblPaystationCashTotal.setText("");
@@ -128,25 +156,35 @@ public class HQ extends JFrame {
 
 
     private void btnRefreshAlertsActionPerformed(java.awt.event.ActionEvent evt) {
+        //update all tables
         updateTables();
     }
 
     private void btnRefreshCarsActionPerformed(java.awt.event.ActionEvent evt) {
+        //update all tables
         updateTables();
     }
 
     private void btnChangePriceActionPerformed(java.awt.event.ActionEvent evt) {
         try {
+            //if value is selected in table
             if (tableServers.getSelectedRow() != -1) {
+
+                //get the selected localserver name
                 String serverName = tableServers.getValueAt(tableServers.getSelectedRow(), 0).toString();
+
+                //resolve the localserver object reference in the naming service
                 LocalServer lServerRef = LocalServerHelper.narrow(nameService.resolve_str(serverName));
                 try {
+                    //parse the new price input
                     double newPrice = Double.parseDouble(txtNewPrice.getText());
+                    //update cost
                     lServerRef.setCost(newPrice);
+                    //update the table
                     updateTables();
                     JOptionPane.showMessageDialog(null, "Price updated.");
-                } catch (Exception e2)
-                {
+                } catch (Exception e2) {
+                    //if input was not a double
                     JOptionPane.showMessageDialog(null, "Error. Input price is invalid.");
                     return;
                 }
@@ -160,40 +198,53 @@ public class HQ extends JFrame {
 
     public void updateTables() {
         try {
+            //if value is selected
             if (tableServers.getSelectedRow() != -1) {
+
+                //get the selected localserver name
                 String serverName = tableServers.getValueAt(tableServers.getSelectedRow(), 0).toString();
+
+                //resolve the localserver object reference in the naming service
                 LocalServer lServerRef = LocalServerHelper.narrow(nameService.resolve_str(serverName));
+
+                //clear previous entries in table
                 entryModel.setRowCount(0);
                 //add all entry models
                 for (Machine machine : lServerRef.listOfEntryGates()) {
                     entryModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
                 }
+
                 payStationModel.setRowCount(0);
                 //add all paystations
                 for (Machine machine : lServerRef.listOfPayStations()) {
                     payStationModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
                 }
+
                 exitModel.setRowCount(0);
                 //add all exit gates
                 for (Machine machine : lServerRef.listOfExitGates()) {
                     exitModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
                 }
+
                 carModel.setRowCount(0);
-                for (ParkingTransaction parkingTrans : lServerRef.log())
-                {
-                    if (parkingTrans.event != EventType.Exited)
-                    {
+                //add all cars currently in selected carpark to the car table
+                for (ParkingTransaction parkingTrans : lServerRef.log()) {
+                    if (parkingTrans.event != EventType.Exited) {
                         carModel.addRow(new String[]{parkingTrans.registration_number, parkingTrans.event == EventType.Paid ? "Paid" : "Entered"});
                     }
                 }
 
                 alertModel.setRowCount(0);
+                //add all alerts to the alert table
                 for (ParkingTransaction parkingTrans : hqImpl.listOfAlerts) {
-                    alertModel.addRow(new String[] {parkingTrans.registration_number, parkingTrans.alert});
+                    alertModel.addRow(new String[]{parkingTrans.registration_number, parkingTrans.alert});
                 }
 
+                //update the total cash earned today label
                 lblServerCashTotal.setText("Cash Total Today: £" + lServerRef.return_cash_total());
-                lblSpacesLeft.setText(lServerRef.returnAvailableSpaces()  + "/" + lServerRef.returnNumberofSpaces());
+                //update the spaces remaining label
+                lblSpacesLeft.setText(lServerRef.returnAvailableSpaces() + "/" + lServerRef.returnNumberofSpaces());
+                //update the current price label
                 lblPrice.setText("£" + lServerRef.getCost());
             } else {
                 lblServerCashTotal.setText("");
@@ -207,31 +258,38 @@ public class HQ extends JFrame {
     public static void setupClientServerConnections(String args[]) {
 
         try {
+            // create and initialize the ORB
             ORB orb = ORB.init(args, null);
 
+            // get reference to rootpoa & activate the POAManager
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
+
+            //get reference to naming service
             org.omg.CORBA.Object nameServiceObject = orb.resolve_initial_references("NameService");
             if (nameServiceObject == null) {
                 System.out.println("nameServiceObject = null");
             }
-
             nameService = NamingContextExtHelper.narrow(nameServiceObject);
             if (nameService == null) {
                 System.out.println("nameService=null");
             }
 
-            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootpoa.the_POAManager().activate();
-
-
+            //get object reference from the servant
             org.omg.CORBA.Object hqRef = rootpoa.servant_to_reference(hqImpl);
             HQServer cref = HQServerHelper.narrow(hqRef);
+
+            //bind the object in the naming service - can be hardcoded as only 1 HQ
             NameComponent[] hqName = nameService.to_name("HQConn");
             nameService.rebind(hqName, cref);
-            System.out.println("HQ started...");
+
+            //  wait for invocations from clients
             orb.run();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            //can't connect to server
+            JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            System.out.println(e);
         }
 
     }
@@ -903,7 +961,7 @@ public class HQ extends JFrame {
     }// </editor-fold>
 
 
-    public void addListeners() {
+    public void addListenersAndInitialiseModels() {
         tableServers.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -917,7 +975,19 @@ public class HQ extends JFrame {
                 tablePaystationsSelectionChange(e);
             }
         });
+        serverModel = (DefaultTableModel) tableServers.getModel();
+        entryModel = (DefaultTableModel) tableEntryGates.getModel();
+        payStationModel = (DefaultTableModel) tablePayStations.getModel();
+        exitModel = (DefaultTableModel) tableExitGates.getModel();
+        carModel = (DefaultTableModel) tableCars.getModel();
+        alertModel = (DefaultTableModel) tableAlerts.getModel();
 
+        tableServers.getTableHeader().setReorderingAllowed(false);
+        tableEntryGates.getTableHeader().setReorderingAllowed(false);
+        tablePayStations.getTableHeader().setReorderingAllowed(false);
+        tableExitGates.getTableHeader().setReorderingAllowed(false);
+        tableCars.getTableHeader().setReorderingAllowed(false);
+        tableAlerts.getTableHeader().setReorderingAllowed(false);
     }
 
 

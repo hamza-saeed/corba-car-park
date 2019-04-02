@@ -11,75 +11,84 @@ import java.time.LocalDateTime;
 
 public class ExitGateClient extends JFrame {
 
-    static ExitGateImplementation exitImpl = new ExitGateImplementation();
+    private static ExitGateImplementation exitImpl = new ExitGateImplementation();
 
-    public ExitGateClient()
-    {
+    public ExitGateClient() {
         //create GUI
         initComponents();
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new ExitGateClient().setVisible(true);
             }
         });
-
+        //set up client/server interaction
         setupClientServerConnections(args);
     }
 
 
-
-    private static  void setupClientServerConnections(String args[])
-    {
+    private static void setupClientServerConnections(String args[]) {
+        //get the name of the exit gate and the server to connect to
         String exitGateName = getArgs(args, "-Name");
-        String serverName = getArgs(args,"-LocalServer");
+        String serverName = getArgs(args, "-LocalServer");
 
         try {
+            //create and initialize the ORB
             ORB orb = ORB.init(args, null);
 
+            // get reference to rootpoa & activate the POAManager
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
+
+            //get reference to naming service
             org.omg.CORBA.Object nameServiceObject = orb.resolve_initial_references("NameService");
-            if (nameServiceObject == null)
-            {
+            if (nameServiceObject == null) {
                 System.out.println("nameServiceObject = null");
             }
 
             NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObject);
-            if (nameService == null)
-            {
+            if (nameService == null) {
                 System.out.println("nameService=null");
             }
 
-            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootpoa.the_POAManager().activate();
-
+            //resolve the LocalService object reference in the naming service
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
+
+            //set reference in exit gate implementation
             exitImpl.lServerRef = localServer;
 
+            //only continue if the set name is unique
             if (localServer.isEntryNameUnique(exitGateName)) {
+
+                //register the gate with local server.
                 exitImpl.registerGate(exitGateName);
 
+                //get object reference from the servant
                 org.omg.CORBA.Object ref = rootpoa.servant_to_reference(exitImpl);
                 ExitGate cref = ExitGateHelper.narrow(ref);
+
+                //bind the object in the naming service
                 NameComponent[] exitName = nameService.to_name(exitGateName);
                 nameService.rebind(exitName, cref);
 
-
+                //set labels to show exit gate name and connected server
                 lblName.setText("Name: " + exitGateName);
                 lblServer.setText("Server: " + serverName);
 
+                //  wait for invocations from clients
                 orb.run();
-            }
-            else
-                {
-                    JOptionPane.showMessageDialog(null,"Exit Gate name must be unique");
-                    return;
+            } else {
+                //error message telling user names must be unique
+                JOptionPane.showMessageDialog(null, "Exit Gate name must be unique");
+                return;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //can't connect to server
+            JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            System.out.println(e);
         }
 
     }
@@ -97,14 +106,16 @@ public class ExitGateClient extends JFrame {
 
 
     private void btnExitMouseClicked(java.awt.event.MouseEvent evt) {
-        if (!exitImpl.machine.enabled)
-        {
-            JOptionPane.showMessageDialog(null,"Exit Gate is disabled", "Error",JOptionPane.ERROR_MESSAGE);
+        //if exit gate is not enabled, show error msg and don't continue.
+        if (!exitImpl.machine.enabled) {
+            JOptionPane.showMessageDialog(null, "Exit Gate is disabled", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        //car exiting
         exitImpl.car_exited(txtReg.getText());
 
+        //clear screen for next customer
+        txtReg.setText("");
     }
 
     @SuppressWarnings("unchecked")

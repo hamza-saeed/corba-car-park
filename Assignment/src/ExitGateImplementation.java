@@ -26,6 +26,7 @@ public class ExitGateImplementation extends ExitGatePOA {
     @Override
     public void car_exited(String reg) {
 
+        //if method returns true, successful, if not, car is already in car park.
         if (lServerRef.vehicle_out(reg))
         {
             JOptionPane.showMessageDialog(null,
@@ -34,31 +35,27 @@ public class ExitGateImplementation extends ExitGatePOA {
         else
         {
             JOptionPane.showMessageDialog(null,
-                    "Vehicle with registration '" + reg + "' is NOT in car park.","Error", JOptionPane.ERROR_MESSAGE);
+                    "Vehicle with registration '" + reg + "' is not in car park.","Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     @Override
     public void toggleEnabled() {
-        if (machine.enabled)
-        {
-            machine.enabled = false;
-            System.out.println("EXIT GATE " + machine_name() + " WAS TURNED OFF");
-        }
-        else
-        {
-            machine.enabled = true;
-            System.out.println("EXIT GATE " + machine_name() + "  WAS TURNED ON");
-        }
-        lServerRef.updateExitGate(machine.name,machine.enabled);
 
+        //if on, turn off. if off, turn on.
+        machine.enabled = !machine.enabled;
+        System.out.println("Exit gate was turned " + (machine.enabled ? "on" : "off"));
+
+        //Updates in the server record
+        lServerRef.updateExitGate(machine.name,machine.enabled);
     }
 
     @Override
     public void reset() {
+        //turn off and on
         machine.enabled = false;
         machine.enabled = true;
-        System.out.println("EXIT GATE " + machine_name() + "  WAS RESET");
+        System.out.println("Exit gate " + machine_name() + " was reset.");
     }
 
 }

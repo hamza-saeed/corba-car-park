@@ -79,7 +79,7 @@ module CarPark {
         void registerPaystation(in string machineName);
         void toggleEnabled();
         void reset();
-        boolean pay(in string carReg, in long duration, in double amountPaid);
+        void pay(in string carReg, in long duration, in double amountPaid);
         double return_cash_total();
     };
 

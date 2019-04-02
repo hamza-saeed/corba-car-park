@@ -18,93 +18,110 @@ public class PayStationClient extends JFrame {
     static int hrsStayed;
     static double cost;
 
-    public PayStationClient()
-    {
+    public PayStationClient() {
+        //Load GUI
         initComponents();
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new PayStationClient().setVisible(true);
             }
         });
+
+        //set up client/server interaction
         setupClientServerConnections(args);
 
     }
 
     private static void setupClientServerConnections(String[] args) {
 
+        //get the name of the paystation and server to connect to
         String payStationName = getArgs(args, "-Name");
-        String serverName = getArgs(args,"-LocalServer");
+        String serverName = getArgs(args, "-LocalServer");
 
         try {
+            // create and initialize the ORB
             ORB orb = ORB.init(args, null);
 
+            // get reference to rootpoa & activate the POAManager
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootpoa.the_POAManager().activate();
+
+            //get reference to naming service
             org.omg.CORBA.Object nameServiceObject = orb.resolve_initial_references("NameService");
-            if (nameServiceObject == null)
-            {
+            if (nameServiceObject == null) {
                 System.out.println("nameServiceObject = null");
             }
 
             NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObject);
-            if (nameService == null)
-            {
+            if (nameService == null) {
                 System.out.println("nameService=null");
             }
 
-            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            rootpoa.the_POAManager().activate();
-
+            //resolve the LocalService object reference in the naming service
             LocalServer localServer = LocalServerHelper.narrow(nameService.resolve_str(serverName));
+
+            //set reference in entry gate implementation
             payStationImpl.lServerRef = localServer;
 
+            //only continue if the set name is unique
             if (localServer.isPayStationNameUnique(payStationName)) {
+
+                //register the gate with local server.
                 payStationImpl.registerPaystation(payStationName);
 
+                //get object reference from the servant
                 org.omg.CORBA.Object ref = rootpoa.servant_to_reference(payStationImpl);
                 PayStation cref = PayStationHelper.narrow(ref);
+
+                //bind the object in the naming service
                 NameComponent[] payName = nameService.to_name(payStationName);
                 nameService.rebind(payName, cref);
 
-
+                //set labels to show paystation name and connected server
                 lblName.setText("Name: " + payStationName);
                 lblServer.setText("Server: " + serverName);
 
+                //  wait for invocations from clients
                 orb.run();
-            }
-            else
-            {
-                JOptionPane.showMessageDialog(null,"Paystation name must be unique");
+            } else {
+                //error message telling user names must be unique
+                JOptionPane.showMessageDialog(null, "Paystation name must be unique");
                 return;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //can't connect to server
+            JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            System.out.println(e);
         }
 
     }
 
+    //not used
     private void txtHoursStayKeyTyped(java.awt.event.KeyEvent evt) {
     }
 
     private void txtHoursStayKeyReleased(java.awt.event.KeyEvent evt) {
         try {
-            hrsStayed = (int)Math.ceil(Double.parseDouble(txtHoursStay.getText()));
-            if (hrsStayed <= 48) {
+            //parse input as double
+            hrsStayed = (int) Math.ceil(Double.parseDouble(txtHoursStay.getText()));
+            //if hrs input >=1 and <= 47, show cost and enable button
+            if ((hrsStayed <= 48) && (hrsStayed >= 1)) {
                 cost = hrsStayed * payStationImpl.lServerRef.getCost();
                 lblCost.setText("£" + cost);
                 lblWarning.setText("");
                 btnPay.setEnabled(true);
-            }
-            else
-            {
+            } else {
+                //disable button and show error msg
                 lblCost.setText((""));
-                lblWarning.setText("Max stay is 48 hours.");
+                lblWarning.setText("Stay must be between 1 and 48 hours");
                 btnPay.setEnabled(false);
             }
         } catch (NumberFormatException nf) {
+            //if number is not valid (e.g. string input), show error and disable button
             lblCost.setText((""));
             lblWarning.setText("Input must be a number");
             btnPay.setEnabled(false);
@@ -112,47 +129,27 @@ public class PayStationClient extends JFrame {
     }
 
     private void btnPayActionPerformed(java.awt.event.ActionEvent evt) {
-        if (!payStationImpl.machine.enabled)
-        {
-            JOptionPane.showMessageDialog(null,"Paystation is disabled", "Error",JOptionPane.ERROR_MESSAGE);
+        //if paystation is not enabled, show error msg and don't continue.
+        if (!payStationImpl.machine.enabled) {
+            JOptionPane.showMessageDialog(null, "Paystation is disabled", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        //get input reg
         String reg = txtReg.getText();
 
-        if (payStationImpl.pay(txtReg.getText(), hrsStayed, cost)) {
-            ParkingTransaction transaction = payStationImpl.lServerRef.getParkingTransaction(reg);
-            LocalDateTime entryDateTime = LocalDateTime.of(transaction.entryDate.year,transaction.entryDate.month,
-                    transaction.entryDate.day,transaction.entryTime.hr,transaction.entryTime.min,transaction.entryTime.sec);
-            LocalDateTime expiry = entryDateTime.plusHours((long)hrsStayed);
-            Date expiryDate = new Date();
-            expiryDate.day = entryDateTime.getDayOfMonth();
-            expiryDate.month = entryDateTime.getMonth().getValue();
-            expiryDate.year = entryDateTime.getYear();
+        //if pay method returns true, successful.
+        payStationImpl.pay(reg, hrsStayed, cost);
 
-            Time expiryTime = new Time();
-            expiryTime.hr = entryDateTime.getHour();
-            expiryTime.min = entryDateTime.getMinute();
-            expiryTime.sec = entryDateTime.getSecond();
-
-            JTextArea ticket = new JTextArea();
-            ticket.append("Car Reg: " + reg + "\n");
-            ticket.append("Amount Paid: £" + cost + "\n");
-            ticket.append("Entered: " + entryDateTime.getDayOfMonth() + "/" + entryDateTime.getMonth().getValue() + "/" + entryDateTime.getYear() + " " );
-            ticket.append(entryDateTime.getHour() + ":" + entryDateTime.getMinute() + ":" + entryDateTime.getSecond() + "\n");
-            ticket.append("Leave by: " + expiry.getDayOfMonth() + "/" + expiry.getMonth().getValue() + "/" +  expiry.getYear() + " ");
-            ticket.append(expiry.getHour() + ":" + expiry.getMinute() + ":" + expiry.getSecond());
-
-            System.out.println("amountPaid:" + cost);
-
-            JOptionPane.showMessageDialog(null, new JScrollPane( ticket), "Ticket",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            //TODO: Clear screens for next customer
-        }
+        //clear screen for next customer
+        txtReg.setText("");
+        txtHoursStay.setText("");
 
     }
 
+    /*
+        Return the argument passed in corresponding to String var
+    */
     private static String getArgs(String[] args, String var) {
         for (int i = 0; i < args.length; i++) {
             String param = args[i];
@@ -162,7 +159,6 @@ public class PayStationClient extends JFrame {
         }
         return "Unnamed";
     }
-
 
 
     @SuppressWarnings("unchecked")
@@ -280,6 +276,7 @@ public class PayStationClient extends JFrame {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtHoursStayKeyTyped(evt);
             }
+
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtHoursStayKeyReleased(evt);
             }
