@@ -91,7 +91,7 @@ public class EntryGateClient extends JFrame {
         } catch (Exception e) {
             //can't connect to server
             JOptionPane.showMessageDialog(null, "Could not connect to server.");
-            System.out.println(e);
+            System.exit(1);
         }
     }
 
@@ -101,8 +101,15 @@ public class EntryGateClient extends JFrame {
             JOptionPane.showMessageDialog(null, "Entry Gate is disabled", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        String reg = txtReg.getText();
+        //must be between 4 and 10 characters
+        if ((reg.length() < 4) || (reg.length() > 10))
+        {
+            JOptionPane.showMessageDialog(null, "Registration must be between 4 and 10 characters", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         //car entering
-        entryImpl.car_entered(txtReg.getText());
+        entryImpl.car_entered(reg);
 
         //clear screen for next customer
         txtReg.setText("");

@@ -18,7 +18,7 @@ java EntryGateClient -ORBInitialPort 1075 -Name entry001 -LocalServer lserver001
 
 sleep 1
 
-java EntryGateClient -ORBInitialPort 1075 -Name entry002 -LocalServer lserver002 &
+java EntryGateClient -ORBInitialPort 1075 -Name entry001 -LocalServer lserver002 &
 
 sleep 1
 

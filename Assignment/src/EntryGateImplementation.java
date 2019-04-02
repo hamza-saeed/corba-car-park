@@ -12,14 +12,18 @@ public class EntryGateImplementation extends EntryGatePOA {
     public LocalServer lserverRef;
 
     @Override
+    public Machine machine() {
+        return machine;
+    }
+
+    @Override
     public String machine_name() {
         return machine.name;
     }
 
     @Override
     public void registerGate(String machineName) {
-
-        //create new machine and set values
+        //initialise new machine and set values
         machine = new Machine();
         machine.name = machineName;
         //enabled by default
@@ -31,7 +35,6 @@ public class EntryGateImplementation extends EntryGatePOA {
 
     @Override
     public void car_entered(String reg) {
-
         //if method returns true, successful, if not, car is already in car park.
         if (lserverRef.vehicle_in(reg))
         {
@@ -47,7 +50,6 @@ public class EntryGateImplementation extends EntryGatePOA {
 
     @Override
     public void toggleEnabled() {
-
         //if on, turn off. if off, turn on.
         machine.enabled = !machine.enabled;
         System.out.println("Entry gate was turned " + (machine.enabled ? "on" : "off"));

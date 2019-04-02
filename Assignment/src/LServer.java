@@ -82,7 +82,7 @@ public class LServer extends JFrame {
         } catch (Exception e) {
             //can't connect to server
             System.out.println("Can not connect to server");
-            System.out.println(e);
+            System.exit(1);
         }
 
     }

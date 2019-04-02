@@ -68,6 +68,7 @@ public class HQ extends JFrame {
                 JOptionPane.showMessageDialog(null, "No selected entry gate");
             }
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
             e.printStackTrace();
         }
     }
@@ -94,7 +95,7 @@ public class HQ extends JFrame {
                 JOptionPane.showMessageDialog(null, "No selected paystation");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
         }
     }
 
@@ -118,9 +119,86 @@ public class HQ extends JFrame {
                 JOptionPane.showMessageDialog(null, "No selected exit gate");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
         }
     }
+
+
+    private void btnResetEntryActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            //if a value is selected in the JTable
+            if (tableEntryGates.getSelectedRow() != -1) {
+
+                //get the selected entry gate name
+                String serverName = tableEntryGates.getValueAt(tableEntryGates.getSelectedRow(), 0).toString();
+
+                //resolve the entry gate object reference in the naming service
+                EntryGate entryRef = EntryGateHelper.narrow(nameService.resolve_str(serverName));
+
+                //call the toggle enabled method
+                entryRef.reset();
+                JOptionPane.showMessageDialog(null, "Entry gate has been reset");
+
+                //call method to update all tables
+                updateTables();
+            } else {
+                JOptionPane.showMessageDialog(null, "No selected entry gate");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
+        }
+    }
+
+    private void btnResetPaystationActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            //if a value is selected in the JTable
+            if (tablePayStations.getSelectedRow() != -1) {
+
+                //get the selected paystation name
+                String serverName = tablePayStations.getValueAt(tablePayStations.getSelectedRow(), 0).toString();
+
+                //resolve the paystation object reference in the naming service
+                PayStation payRef = PayStationHelper.narrow(nameService.resolve_str(serverName));
+
+                //call the toggle enabled method
+                payRef.reset();
+                JOptionPane.showMessageDialog(null, "Pay station has been reset");
+
+                //call method to update all tables
+                updateTables();
+            } else {
+                JOptionPane.showMessageDialog(null, "No selected pay station gate");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
+        }
+    }
+
+    private void btnResetExitActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            //if a value is selected in the JTable
+            if (tableExitGates.getSelectedRow() != -1) {
+
+                //get the selected exit gate name
+                String serverName = tableExitGates.getValueAt(tableExitGates.getSelectedRow(), 0).toString();
+
+                //resolve the exit gate object reference in the naming service
+                ExitGate exitRef = ExitGateHelper.narrow(nameService.resolve_str(serverName));
+
+                //call the toggle enabled method
+                exitRef.reset();
+                JOptionPane.showMessageDialog(null, "Exit gate has been reset");
+
+                //call method to update all tables
+                updateTables();
+            } else {
+                JOptionPane.showMessageDialog(null, "No selected exit gate");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
+        }
+    }
+
 
     private void tableServersSelectionChange(javax.swing.event.ListSelectionEvent evt) {
         if (evt.getValueIsAdjusting()) {
@@ -150,10 +228,9 @@ public class HQ extends JFrame {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
         }
     }
-
 
     private void btnRefreshAlertsActionPerformed(java.awt.event.ActionEvent evt) {
         //update all tables
@@ -191,7 +268,7 @@ public class HQ extends JFrame {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
         }
     }
 
@@ -250,7 +327,7 @@ public class HQ extends JFrame {
                 lblServerCashTotal.setText("Cash Total Today: £--");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
         }
     }
 
@@ -288,8 +365,8 @@ public class HQ extends JFrame {
 
         } catch (Exception e) {
             //can't connect to server
-            JOptionPane.showMessageDialog(null, "Could not connect to server.");
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null, "Connection error", "Error", 0);
+            System.exit(1);
         }
 
     }
@@ -315,17 +392,20 @@ public class HQ extends JFrame {
         javax.swing.JScrollPane jScrollPane2 = new javax.swing.JScrollPane();
         tableEntryGates = new javax.swing.JTable();
         javax.swing.JButton btnToggleEntry = new javax.swing.JButton();
+        javax.swing.JButton btnResetEntry = new javax.swing.JButton();
         javax.swing.JPanel jPanel5 = new javax.swing.JPanel();
         javax.swing.JLabel jLabel4 = new javax.swing.JLabel();
         javax.swing.JScrollPane jScrollPane3 = new javax.swing.JScrollPane();
         tablePayStations = new javax.swing.JTable();
-        javax.swing.JButton btnTogglePaystation = new javax.swing.JButton();
         lblPaystationCashTotal = new javax.swing.JLabel();
+        javax.swing.JButton btnTogglePaystation = new javax.swing.JButton();
+        javax.swing.JButton btnResetPaystation = new javax.swing.JButton();
         javax.swing.JPanel jPanel6 = new javax.swing.JPanel();
         javax.swing.JLabel jLabel5 = new javax.swing.JLabel();
         javax.swing.JScrollPane jScrollPane4 = new javax.swing.JScrollPane();
         tableExitGates = new javax.swing.JTable();
         javax.swing.JButton btnToggleExit = new javax.swing.JButton();
+        javax.swing.JButton btnResetExit = new javax.swing.JButton();
         javax.swing.JPanel jPanel8 = new javax.swing.JPanel();
         javax.swing.JLabel jLabel8 = new javax.swing.JLabel();
         javax.swing.JScrollPane jScrollPane5 = new javax.swing.JScrollPane();
@@ -447,6 +527,7 @@ public class HQ extends JFrame {
             }
         });
 
+        lblServerCashTotal.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
         lblServerCashTotal.setText("Cash Total Today: £--");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -459,14 +540,16 @@ public class HQ extends JFrame {
                                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addComponent(lblServerCashTotal)
-                                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                                        .addGap(41, 41, 41)
-                                                                        .addComponent(jLabel2))
-                                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                                        .addGap(35, 35, 35)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGap(41, 41, 41)
+                                                                .addComponent(jLabel2))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGap(35, 35, 35)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                                .addGap(12, 12, 12)
+                                                                                .addComponent(lblServerCashTotal))
                                                                         .addComponent(btnRefreshServers))))
                                                 .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap())
@@ -476,13 +559,13 @@ public class HQ extends JFrame {
                         .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel2)
-                                .addGap(18, 18, 18)
+                                .addGap(12, 12, 12)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnRefreshServers)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(12, 12, 12)
                                 .addComponent(lblServerCashTotal)
-                                .addContainerGap(22, Short.MAX_VALUE))
+                                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         jLabel3.setText("Connected Entry Gates");
@@ -519,6 +602,13 @@ public class HQ extends JFrame {
             }
         });
 
+        btnResetEntry.setText("Reset");
+        btnResetEntry.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetEntryActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -527,13 +617,17 @@ public class HQ extends JFrame {
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel4Layout.createSequentialGroup()
                                                 .addGap(30, 30, 30)
-                                                .addComponent(jLabel3))
-                                        .addGroup(jPanel4Layout.createSequentialGroup()
-                                                .addContainerGap()
-                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(jPanel4Layout.createSequentialGroup()
-                                                .addGap(44, 44, 44)
-                                                .addComponent(btnToggleEntry)))
+                                                .addComponent(jLabel3)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                                .addGap(0, 11, Short.MAX_VALUE)
+                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap())
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(45, 45, 45)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(btnToggleEntry, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnResetEntry, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -541,11 +635,13 @@ public class HQ extends JFrame {
                         .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel3)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnToggleEntry)
-                                .addContainerGap(49, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnResetEntry)
+                                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         jLabel4.setText("Connected Paystations");
@@ -575,6 +671,9 @@ public class HQ extends JFrame {
         });
         jScrollPane3.setViewportView(tablePayStations);
 
+        lblPaystationCashTotal.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
+        lblPaystationCashTotal.setText("Cash Total Today: £--");
+
         btnTogglePaystation.setText("Toggle On/Off");
         btnTogglePaystation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -582,26 +681,32 @@ public class HQ extends JFrame {
             }
         });
 
-        lblPaystationCashTotal.setText("Cash Total Today: £--");
+        btnResetPaystation.setText("Reset");
+        btnResetPaystation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetPaystationActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
                 jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addContainerGap())
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                                .addComponent(btnTogglePaystation)
-                                                .addGap(44, 44, 44))))
                         .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addGap(30, 30, 30)
                                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel4)
-                                        .addComponent(lblPaystationCashTotal))
+                                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                                .addGap(30, 30, 30)
+                                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel4)
+                                                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                                                .addGap(14, 14, 14)
+                                                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(btnTogglePaystation)
+                                                                        .addComponent(btnResetPaystation, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(lblPaystationCashTotal, javax.swing.GroupLayout.Alignment.TRAILING)))))
+                                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
@@ -609,13 +714,15 @@ public class HQ extends JFrame {
                         .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel4)
-                                .addGap(18, 18, 18)
+                                .addGap(12, 12, 12)
                                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnTogglePaystation)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnResetPaystation)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(lblPaystationCashTotal)
-                                .addContainerGap(22, Short.MAX_VALUE))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel5.setText("Connected Exit Gates");
@@ -652,6 +759,13 @@ public class HQ extends JFrame {
             }
         });
 
+        btnResetExit.setText("Reset");
+        btnResetExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetExitActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -663,27 +777,26 @@ public class HQ extends JFrame {
                                                 .addComponent(jLabel5))
                                         .addGroup(jPanel6Layout.createSequentialGroup()
                                                 .addContainerGap()
-                                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel6Layout.createSequentialGroup()
+                                                .addGap(44, 44, 44)
+                                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(btnToggleExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(btnResetExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel6Layout.createSequentialGroup()
-                                        .addGap(45, 45, 45)
-                                        .addComponent(btnToggleExit)
-                                        .addContainerGap(45, Short.MAX_VALUE)))
         );
         jPanel6Layout.setVerticalGroup(
                 jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel6Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel5)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(74, Short.MAX_VALUE))
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel6Layout.createSequentialGroup()
-                                        .addGap(152, 152, 152)
-                                        .addComponent(btnToggleExit)
-                                        .addContainerGap(42, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnToggleExit)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnResetExit)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel8.setText("Cars Currently in Selected Car Park");
@@ -731,19 +844,21 @@ public class HQ extends JFrame {
                         .addGroup(jPanel8Layout.createSequentialGroup()
                                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel8Layout.createSequentialGroup()
-                                                .addGap(54, 54, 54)
+                                                .addContainerGap()
+                                                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel8Layout.createSequentialGroup()
+                                                                .addGap(83, 83, 83)
+                                                                .addComponent(btnRefreshCars, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(jPanel8Layout.createSequentialGroup()
+                                                .addGap(33, 33, 33)
                                                 .addComponent(jLabel8))
                                         .addGroup(jPanel8Layout.createSequentialGroup()
-                                                .addContainerGap()
-                                                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel8Layout.createSequentialGroup()
-                                                                .addComponent(btnRefreshCars, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addGap(6, 6, 6)
-                                                                .addComponent(jLabel9)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(lblSpacesLeft))
-                                                        .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addContainerGap(15, Short.MAX_VALUE))
+                                                .addGap(59, 59, 59)
+                                                .addComponent(jLabel9)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(lblSpacesLeft)))
+                                .addContainerGap(26, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
                 jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -753,8 +868,9 @@ public class HQ extends JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnRefreshCars)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnRefreshCars)
                                         .addComponent(jLabel9)
                                         .addComponent(lblSpacesLeft))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -807,9 +923,12 @@ public class HQ extends JFrame {
                         .addGroup(jPanel9Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel7))
-                                .addContainerGap(26, Short.MAX_VALUE))
+                                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                        .addGroup(jPanel9Layout.createSequentialGroup()
+                                                .addGap(17, 17, 17)
+                                                .addComponent(jLabel7)
+                                                .addGap(0, 26, Short.MAX_VALUE)))
+                                .addContainerGap())
         );
         jPanel9Layout.setVerticalGroup(
                 jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -846,7 +965,7 @@ public class HQ extends JFrame {
         jPanel10Layout.setHorizontalGroup(
                 jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel10Layout.createSequentialGroup()
-                                .addContainerGap(32, Short.MAX_VALUE)
+                                .addContainerGap(35, Short.MAX_VALUE)
                                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel10Layout.createSequentialGroup()
                                                 .addComponent(btnChangePrice)
@@ -864,14 +983,14 @@ public class HQ extends JFrame {
                                                                 .addComponent(jLabel11)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addComponent(lblPrice)))
-                                                .addGap(25, 25, 25))))
+                                                .addGap(24, 24, 24))))
         );
         jPanel10Layout.setVerticalGroup(
                 jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel10Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel11)
                                         .addComponent(lblPrice))
@@ -895,24 +1014,26 @@ public class HQ extends JFrame {
                                                 .addGap(73, 73, 73)
                                                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(BackgroundLayout.createSequentialGroup()
-                                                .addGap(510, 510, 510)
-                                                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(BackgroundLayout.createSequentialGroup()
                                                 .addGap(370, 370, 370)
-                                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(BackgroundLayout.createSequentialGroup()
                                                 .addGap(138, 138, 138)
                                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(BackgroundLayout.createSequentialGroup()
-                                                .addGap(602, 602, 602)
-                                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(BackgroundLayout.createSequentialGroup()
-                                                .addGap(138, 138, 138)
-                                                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(BackgroundLayout.createSequentialGroup()
-                                                .addGap(835, 835, 835)
                                                 .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addGroup(BackgroundLayout.createSequentialGroup()
+                                                                .addGap(602, 602, 602)
+                                                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(BackgroundLayout.createSequentialGroup()
+                                                                .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addGroup(BackgroundLayout.createSequentialGroup()
+                                                                                .addGap(138, 138, 138)
+                                                                                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGap(15, 15, 15)
+                                                .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -921,28 +1042,25 @@ public class HQ extends JFrame {
                 BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(BackgroundLayout.createSequentialGroup()
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(BackgroundLayout.createSequentialGroup()
-                                                .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addGroup(BackgroundLayout.createSequentialGroup()
-                                                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addGap(22, 22, 22)
-                                                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(BackgroundLayout.createSequentialGroup()
-                                                                .addGap(15, 15, 15)
-                                                                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                                                        .addGroup(BackgroundLayout.createSequentialGroup()
-                                                                .addGap(17, 17, 17)
-                                                                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
-                                        .addGroup(BackgroundLayout.createSequentialGroup()
-                                                .addGap(150, 150, 150)
-                                                .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGap(17, 17, 17)
-                                                .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                                .addGap(22, 22, 22)
+                                                .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addGroup(BackgroundLayout.createSequentialGroup()
+                                                        .addGap(22, 22, 22)
+                                                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, BackgroundLayout.createSequentialGroup()
+                                                        .addGap(24, 24, 24)
+                                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(9, 9, 9)
+                                .addGroup(BackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
         );
 
@@ -991,7 +1109,7 @@ public class HQ extends JFrame {
     }
 
 
-    public static javax.swing.JLabel lblServerCashTotal;
+    static javax.swing.JLabel lblServerCashTotal;
     static javax.swing.JLabel lblPaystationCashTotal;
     static javax.swing.JLabel lblSpacesLeft;
     static javax.swing.JLabel lblPrice;

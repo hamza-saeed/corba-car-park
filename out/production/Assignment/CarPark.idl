@@ -32,24 +32,44 @@ module CarPark {
         boolean enabled;
     };
 
-        typedef sequence<ParkingTransaction> Log_of_parking_transactions;
-        typedef sequence<Machine> List_of_entryGates;
-        typedef sequence<Machine> List_of_exitGates;
-        typedef sequence<Machine> List_of_payStations;
+     typedef sequence<ParkingTransaction> List_of_parking_transactions;
+     typedef sequence<Machine> List_of_machines;
 
-     interface  HQServer {
-        void raise_alarm(in ParkingTransaction transaction);
-        void register_local_server(in Machine machine);
-     };
+    interface EntryGate {
+        readonly attribute Machine machine;
+        readonly attribute string machine_name;
+        void registerGate(in string machineName);
+        void car_entered(in string reg);
+        void toggleEnabled();
+        void reset();
+    };
 
+    interface  PayStation {
+        readonly attribute Machine machine;
+        readonly attribute string machine_name;
+        void registerPaystation(in string machineName);
+        void toggleEnabled();
+        void reset();
+        void pay(in string carReg, in long duration, in double amountPaid);
+        double return_cash_total();
+    };
 
+    interface ExitGate {
+        readonly attribute Machine machine;
+        readonly attribute string machine_name;
+        void registerGate(in string machineName);
+        void car_exited(in string reg);
+        void toggleEnabled();
+        void reset();
+    };
 
     interface  LocalServer {
+        readonly attribute Machine machine;
         readonly attribute string location;
-        readonly attribute Log_of_parking_transactions log;
-        readonly attribute List_of_entryGates listOfEntryGates;
-        readonly attribute List_of_payStations listOfPayStations;
-        readonly attribute List_of_exitGates listOfExitGates;
+        readonly attribute List_of_parking_transactions log;
+        readonly attribute List_of_machines listOfEntryGates;
+        readonly attribute List_of_machines listOfPayStations;
+        readonly attribute List_of_machines listOfExitGates;
         void registerLocalServer(in string machineName);
         boolean vehicle_in(in string carReg);
         boolean vehicle_out(in string reg);
@@ -68,34 +88,15 @@ module CarPark {
         short returnNumberofSpaces();
         short returnAvailableSpaces();
         ParkingTransaction getParkingTransaction(in string reg);
-
-        };
-
-    interface  PayStation {
-        readonly attribute string machine_name;
-        void registerPaystation(in string machineName);
-        void toggleEnabled();
-        void reset();
-        boolean pay(in string carReg, in long duration, in double amountPaid);
-        double return_cash_total();
+        boolean isEntryNameUnique(in string name);
+        boolean isPayStationNameUnique(in string name);
+        boolean isExitGateNameUnique(in string name);
     };
 
-
-    interface EntryGate {
-
-        readonly attribute string machine_name;
-        void registerGate(in string machineName);
-        void car_entered(in string reg);
-        void toggleEnabled();
-        void reset();
-    };
-
-    interface ExitGate {
-
-        readonly attribute string machine_name;
-        void registerGate(in string machineName);
-        void car_exited(in string reg);
-        void toggleEnabled();
-        void reset();
-        };
+     interface  HQServer {
+        readonly attribute List_of_parking_transactions listOfAlerts;
+        void raise_alarm(in ParkingTransaction transaction);
+        void register_local_server(in Machine machine);
+        boolean isLocalServerNameUnique(in string name);
+     };
 };

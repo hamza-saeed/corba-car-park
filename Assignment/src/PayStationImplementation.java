@@ -10,43 +10,28 @@ public class PayStationImplementation extends PayStationPOA {
     Machine machine;
 
     @Override
+    public Machine machine() {
+        return machine;
+    }
+
+    @Override
     public String machine_name() {
         return machine.name;
     }
 
     @Override
     public void registerPaystation(String machineName) {
+        //initialise new machine and set values
         machine = new Machine();
         machine.name = machineName;
         machine.enabled = true;
+        //add paystation to local server
         lServerRef.add_pay_station(machine);
         System.out.println("Added: " + machineName);
     }
 
     @Override
-    public void toggleEnabled() {
-        if (machine.enabled) {
-            machine.enabled = false;
-            System.out.println("Paystation " + machine_name() + " was turned off");
-        } else {
-            machine.enabled = true;
-            System.out.println("Paystation " + machine_name() + "  was turned on");
-        }
-        lServerRef.updatePayStation(machine.name, machine.enabled);
-
-    }
-
-    @Override
-    public void reset() {
-        machine.enabled = false;
-        machine.enabled = true;
-        System.out.println("Paystation " + machine_name() + "  was reset");
-
-    }
-
-    @Override
     public void pay(String carReg, int duration, double amountPaid) {
-
         //only continue if ticket has not been paid
         if (lServerRef.vehicle_already_paid(carReg)) {
             JOptionPane.showMessageDialog(null,
@@ -91,9 +76,27 @@ public class PayStationImplementation extends PayStationPOA {
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+    }
 
+    @Override
+    public void toggleEnabled() {
+        //if on, turn off. if off, turn on.
+        machine.enabled = !machine.enabled;
+        System.out.println("Paystation was turned " + (machine.enabled ? "on" : "off"));
+
+        //Update the server record
+        lServerRef.updatePayStation(machine.name, machine.enabled);
 
     }
+
+    @Override
+    public void reset() {
+        //turn off and on
+        machine.enabled = false;
+        machine.enabled = true;
+        System.out.println("Paystation " + machine_name() + "  was reset");
+    }
+
 
     @Override
     public double return_cash_total() {
@@ -103,7 +106,7 @@ public class PayStationImplementation extends PayStationPOA {
         //loop through all log entries
         for (int i = 0; i < lServerRef.log().length; i++) {
             ParkingTransaction parkingTransaction = lServerRef.log()[i];
-            //add all payments received today.
+            //add all payments received today for current paystation
             if ((parkingTransaction.event != EventType.Entered)) {
                 if (parkingTransaction.entryDate.day == currentDate.getDayOfMonth() &&
                         (parkingTransaction.entryDate.month == currentDate.getMonth().getValue()) &&

@@ -38,5 +38,13 @@ public class HQImplementation extends HQServerPOA {
         return unique;
     }
 
+    @Override
+    public ParkingTransaction[] listOfAlerts() {
+        //return alerts arraylist as array
+        ParkingTransaction[] parkingTransactions = new ParkingTransaction[listOfAlerts.size()];
+        listOfAlerts.toArray(parkingTransactions);
+        return parkingTransactions;
+    }
+
 
 }
