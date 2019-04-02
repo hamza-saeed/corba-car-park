@@ -104,7 +104,7 @@ public class PayStationImplementation extends PayStationPOA {
         for (int i = 0; i < lServerRef.log().length; i++) {
             ParkingTransaction parkingTransaction = lServerRef.log()[i];
             //add all payments received today.
-            if ((parkingTransaction.event == EventType.Paid)) {
+            if ((parkingTransaction.event != EventType.Entered)) {
                 if (parkingTransaction.entryDate.day == currentDate.getDayOfMonth() &&
                         (parkingTransaction.entryDate.month == currentDate.getMonth().getValue()) &&
                         (parkingTransaction.entryDate.year == currentDate.getYear()) && (parkingTransaction.paystationName.equals(machine_name()))) {

@@ -125,7 +125,7 @@ public class HQ extends JFrame {
     private void tableServersSelectionChange(javax.swing.event.ListSelectionEvent evt) {
         if (evt.getValueIsAdjusting()) {
             //reset cash total
-            lblPaystationCashTotal.setText("");
+            lblPaystationCashTotal.setText("Cash Total Today: £--");
             //update all tables method
             updateTables();
         }
@@ -146,7 +146,7 @@ public class HQ extends JFrame {
                     //Show total cash today from selected paystation
                     lblPaystationCashTotal.setText("Cash Total Today: £" + payStationRef.return_cash_total());
                 } else {
-                    lblPaystationCashTotal.setText("");
+                    lblPaystationCashTotal.setText("Cash Total Today: £--");
                 }
             }
         } catch (Exception e) {
@@ -247,7 +247,7 @@ public class HQ extends JFrame {
                 //update the current price label
                 lblPrice.setText("£" + lServerRef.getCost());
             } else {
-                lblServerCashTotal.setText("");
+                lblServerCashTotal.setText("Cash Total Today: £--");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -447,7 +447,7 @@ public class HQ extends JFrame {
             }
         });
 
-        lblServerCashTotal.setText("");
+        lblServerCashTotal.setText("Cash Total Today: £--");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -582,7 +582,7 @@ public class HQ extends JFrame {
             }
         });
 
-        lblPaystationCashTotal.setText("");
+        lblPaystationCashTotal.setText("Cash Total Today: £--");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);

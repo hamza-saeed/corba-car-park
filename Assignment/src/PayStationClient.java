@@ -144,7 +144,8 @@ public class PayStationClient extends JFrame {
         //clear screen for next customer
         txtReg.setText("");
         txtHoursStay.setText("");
-
+        lblCost.setText("");
+        lblWarning.setText("");
     }
 
     /*
