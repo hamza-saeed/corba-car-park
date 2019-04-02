@@ -10,11 +10,15 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class HQ extends JFrame {
 
     public static HQImplementation hqImpl = new HQImplementation();
     static NamingContextExt nameService;
+    ScheduledExecutorService tableUpdater;
 
     public HQ() {
 
@@ -45,6 +49,10 @@ public class HQ extends JFrame {
         for (Machine machine : hqImpl.listOfLocalServers) {
             serverModel.addRow(new String[]{machine.name});
         }
+
+        //this updates the tables every 3 seconds
+        tableUpdater = Executors.newScheduledThreadPool(1);
+        tableUpdater.scheduleAtFixedRate(updateTables, 0, 3, TimeUnit.SECONDS);
     }
 
     private void btnToggleEntryActionPerformed(java.awt.event.ActionEvent evt) {
@@ -232,16 +240,6 @@ public class HQ extends JFrame {
         }
     }
 
-    private void btnRefreshAlertsActionPerformed(java.awt.event.ActionEvent evt) {
-        //update all tables
-        updateTables();
-    }
-
-    private void btnRefreshCarsActionPerformed(java.awt.event.ActionEvent evt) {
-        //update all tables
-        updateTables();
-    }
-
     private void btnChangePriceActionPerformed(java.awt.event.ActionEvent evt) {
         try {
             //if value is selected in table
@@ -361,7 +359,7 @@ public class HQ extends JFrame {
             nameService.rebind(hqName, cref);
 
             //  wait for invocations from clients
-            orb.run();
+            //orb.run();
 
         } catch (Exception e) {
             //can't connect to server
@@ -370,6 +368,14 @@ public class HQ extends JFrame {
         }
 
     }
+
+    //Runnable to update tables every 3 seconds.
+    Runnable updateTables = new Runnable() {
+        @Override
+        public void run() {
+            updateTables();
+        }
+    };
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
@@ -410,14 +416,12 @@ public class HQ extends JFrame {
         javax.swing.JLabel jLabel8 = new javax.swing.JLabel();
         javax.swing.JScrollPane jScrollPane5 = new javax.swing.JScrollPane();
         tableCars = new javax.swing.JTable();
-        javax.swing.JButton btnRefreshCars = new javax.swing.JButton();
         javax.swing.JLabel jLabel9 = new javax.swing.JLabel();
         lblSpacesLeft = new javax.swing.JLabel();
         javax.swing.JPanel jPanel9 = new javax.swing.JPanel();
         javax.swing.JLabel jLabel7 = new javax.swing.JLabel();
         javax.swing.JScrollPane jScrollPane6 = new javax.swing.JScrollPane();
         tableAlerts = new javax.swing.JTable();
-        javax.swing.JButton btnRefreshAlerts = new javax.swing.JButton();
         javax.swing.JPanel jPanel10 = new javax.swing.JPanel();
         javax.swing.JLabel jLabel10 = new javax.swing.JLabel();
         javax.swing.JLabel jLabel11 = new javax.swing.JLabel();
@@ -826,13 +830,6 @@ public class HQ extends JFrame {
         });
         jScrollPane5.setViewportView(tableCars);
 
-        btnRefreshCars.setText("Refresh Cars");
-        btnRefreshCars.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRefreshCarsActionPerformed(evt);
-            }
-        });
-
         jLabel9.setText("Spaces Available: ");
 
         lblSpacesLeft.setText("[Spaces]");
@@ -847,8 +844,7 @@ public class HQ extends JFrame {
                                                 .addContainerGap()
                                                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addGroup(jPanel8Layout.createSequentialGroup()
-                                                                .addGap(83, 83, 83)
-                                                                .addComponent(btnRefreshCars, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGap(83, 83, 83))
                                                         .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addGroup(jPanel8Layout.createSequentialGroup()
                                                 .addGap(33, 33, 33)
@@ -868,7 +864,6 @@ public class HQ extends JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnRefreshCars)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel9)
@@ -905,20 +900,12 @@ public class HQ extends JFrame {
         });
         jScrollPane6.setViewportView(tableAlerts);
 
-        btnRefreshAlerts.setText("Refresh Alerts");
-        btnRefreshAlerts.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRefreshAlertsActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
                 jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(btnRefreshAlerts)
                                 .addGap(95, 95, 95))
                         .addGroup(jPanel9Layout.createSequentialGroup()
                                 .addContainerGap()
@@ -938,7 +925,6 @@ public class HQ extends JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnRefreshAlerts)
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 

@@ -137,7 +137,7 @@ public class LServerImplementation extends LocalServerPOA {
                         //if they're trying to leave after grace period raise alarm
                         if (currentDateTime.isAfter(gracePeriod)) {
                             Duration duration = Duration.between(currentDateTime, gracePeriod);
-                            logOfParkingTransactions.get(i).alert = "Overdue by " + duration.toMinutes() + " mins";
+                            logOfParkingTransactions.get(i).alert = "Overdue by " + (duration.toMinutes() * -1) + " mins";
                             //raise alarm but allow them to leave
                             HQRef.raise_alarm(parkingTransaction);
                             logOfParkingTransactions.get(i).event = EventType.Exited;
