@@ -10,7 +10,7 @@ java LServer -ORBInitialPort 1075 -Name lserver001 -Spaces 150 &
 
 sleep 1
 
-java LServer -ORBInitialPort 1075 -Name lserver002 -Spaces 50 &
+java LServer -ORBInitialPort 1075 -Name lserver002 -Spaces 2 &
 
 sleep 1
 

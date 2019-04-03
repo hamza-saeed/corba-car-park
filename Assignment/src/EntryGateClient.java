@@ -108,6 +108,12 @@ public class EntryGateClient extends JFrame {
             JOptionPane.showMessageDialog(null, "Registration must be between 4 and 10 characters", "", 0);
             return;
         }
+        //check that there are spaces left in the car park
+        if (entryImpl.lserverRef.returnAvailableSpaces() <= 0) {
+            JOptionPane.showMessageDialog(null, "Sorry, the car park has no available spaces.", "", 0);
+            return;
+        }
+
         //car entering
         entryImpl.car_entered(reg);
 
