@@ -151,6 +151,7 @@ public class PayStationClient extends JFrame {
         txtHoursStay.setText("");
         lblCost.setText("");
         lblWarning.setText("");
+        btnPay.setEnabled(false);
     }
 
     /*

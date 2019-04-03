@@ -75,7 +75,8 @@ public class HQ extends JFrame {
                 entryRef.toggleEnabled();
 
                 //call method to update all tables
-                updateTables();
+                updateTables(true);
+                JOptionPane.showMessageDialog(null, entryRef.machine_name() + " has been turned " + (entryRef.machine().enabled ? "On" : "Off"));
 
             } else {
                 JOptionPane.showMessageDialog(null, "No selected entry gate");
@@ -101,7 +102,9 @@ public class HQ extends JFrame {
                 payStationRef.toggleEnabled();
 
                 //call method to update all tables
-                updateTables();
+                updateTables(true);
+
+                JOptionPane.showMessageDialog(null, payStationRef.machine_name() + " has been turned " + (payStationRef.machine().enabled ? "On" : "Off"));
 
 
             } else {
@@ -127,7 +130,10 @@ public class HQ extends JFrame {
                 exitRef.toggleEnabled();
 
                 //call method to update all tables
-                updateTables();
+                updateTables(true);
+
+                JOptionPane.showMessageDialog(null, exitRef.machine_name() + " has been turned " + (exitRef.machine().enabled ? "On" : "Off"));
+
             } else {
                 JOptionPane.showMessageDialog(null, "No selected exit gate");
             }
@@ -153,7 +159,7 @@ public class HQ extends JFrame {
                 JOptionPane.showMessageDialog(null, "Entry gate has been reset");
 
                 //call method to update all tables
-                updateTables();
+                updateTables(true);
             } else {
                 JOptionPane.showMessageDialog(null, "No selected entry gate");
             }
@@ -178,7 +184,7 @@ public class HQ extends JFrame {
                 JOptionPane.showMessageDialog(null, "Pay station has been reset");
 
                 //call method to update all tables
-                updateTables();
+                updateTables(true);
             } else {
                 JOptionPane.showMessageDialog(null, "No selected pay station gate");
             }
@@ -203,7 +209,7 @@ public class HQ extends JFrame {
                 JOptionPane.showMessageDialog(null, "Exit gate has been reset");
 
                 //call method to update all tables
-                updateTables();
+                updateTables(true);
             } else {
                 JOptionPane.showMessageDialog(null, "No selected exit gate");
             }
@@ -218,7 +224,7 @@ public class HQ extends JFrame {
             //reset cash total
             lblPaystationCashTotal.setText("Cash Total Today: £--");
             //update all tables method
-            updateTables();
+            updateTables(true);
         }
     }
 
@@ -261,7 +267,7 @@ public class HQ extends JFrame {
                     //update cost
                     lServerRef.setCost(newPrice);
                     //update the table
-                    updateTables();
+                    updateTables(true);
                     JOptionPane.showMessageDialog(null, "Price updated.");
                 } catch (Exception e2) {
                     //if input was not a double
@@ -276,7 +282,7 @@ public class HQ extends JFrame {
     }
 
 
-    public void updateTables() {
+    public void updateTables(boolean updateForced) {
         try {
             //if value is selected
             if (tableServers.getSelectedRow() != -1) {
@@ -287,25 +293,34 @@ public class HQ extends JFrame {
                 //resolve the localserver object reference in the naming service
                 LocalServer lServerRef = LocalServerHelper.narrow(nameService.resolve_str(serverName));
 
-                //clear previous entries in table
-                entryModel.setRowCount(0);
-                //add all entry models
-                for (Machine machine : lServerRef.listOfEntryGates()) {
-                    entryModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
+                //if new entries added or update is forced
+                if ((lServerRef.listOfEntryGates().length != entryModel.getRowCount()) || (updateForced)) {
+                    //clear previous entries in table
+                    entryModel.setRowCount(0);
+                    //add all entry models
+                    for (Machine machine : lServerRef.listOfEntryGates()) {
+                        entryModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
+                    }
                 }
 
-                payStationModel.setRowCount(0);
-                //add all paystations
-                for (Machine machine : lServerRef.listOfPayStations()) {
-                    payStationModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
+                //if new entries added or update is forced
+                if ((lServerRef.listOfPayStations().length != payStationModel.getRowCount()) || (updateForced)) {
+                    payStationModel.setRowCount(0);
+                    //add all paystations
+                    for (Machine machine : lServerRef.listOfPayStations()) {
+                        payStationModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
+                    }
                 }
+                //if new entries added or update is forced
+                if ((lServerRef.listOfExitGates().length != exitModel.getRowCount()) || (updateForced)) {
 
-                exitModel.setRowCount(0);
-                //add all exit gates
-                for (Machine machine : lServerRef.listOfExitGates()) {
-                    exitModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
+                    exitModel.setRowCount(0);
+                    //add all exit gates
+                    for (Machine machine : lServerRef.listOfExitGates()) {
+                        exitModel.addRow(new String[]{machine.name, machine.enabled ? "Yes" : "No"});
+                    }
                 }
-
+                //if new entries added or removed
                 carModel.setRowCount(0);
                 //add all cars currently in selected carpark to the car table
                 for (ParkingTransaction parkingTrans : lServerRef.log()) {
@@ -314,12 +329,17 @@ public class HQ extends JFrame {
                     }
                 }
 
-                alertModel.setRowCount(0);
-                //add all alerts to the alert table
-                for (ParkingTransaction parkingTrans : hqImpl.listOfAlerts) {
-                    alertModel.addRow(new String[]{parkingTrans.registration_number, parkingTrans.alert});
-                }
+                if ((hqImpl.listOfAlerts.size() != alertModel.getRowCount()) || (updateForced)) {
 
+                    alertModel.setRowCount(0);
+                    //add all alerts to the alert table
+                    for (ParkingTransaction parkingTrans : hqImpl.listOfAlerts) {
+                        //if the alert is for the current server selected, then add to table
+                        if (parkingTrans.serverName.equals(serverName)) {
+                            alertModel.addRow(new String[]{parkingTrans.registration_number, parkingTrans.alert});
+                        }
+                    }
+                }
                 //update the total cash earned today label
                 lblServerCashTotal.setText("Cash Total Today: £" + lServerRef.return_cash_total());
                 //update the spaces remaining label
@@ -378,7 +398,7 @@ public class HQ extends JFrame {
     Runnable updateTables = new Runnable() {
         @Override
         public void run() {
-            updateTables();
+            updateTables(false);
         }
     };
     //Runnable to update tables every 3 seconds.
@@ -570,10 +590,10 @@ public class HQ extends JFrame {
                                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                                                 .addGap(35, 35, 35)
                                                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                                                                .addGap(12, 12, 12)
-                                                                                .addComponent(lblServerCashTotal))
-                                                                //        .addComponent(btnRefreshServers)
+                                                                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                                        .addGap(12, 12, 12)
+                                                                                        .addComponent(lblServerCashTotal))
+                                                                        //        .addComponent(btnRefreshServers)
                                                                 )))
                                                 .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap())
@@ -1113,7 +1133,6 @@ public class HQ extends JFrame {
         tableCars.getTableHeader().setReorderingAllowed(false);
         tableAlerts.getTableHeader().setReorderingAllowed(false);
     }
-
 
     static javax.swing.JLabel lblServerCashTotal;
     static javax.swing.JLabel lblPaystationCashTotal;

@@ -103,6 +103,7 @@ public class LServerImplementation extends LocalServerPOA {
             newTransaction.entryDate = date;
             newTransaction.entryTime = time;
             newTransaction.event = Entered;
+            newTransaction.serverName = machine.name;
             //not set yet
             newTransaction.paystationName = "";
             newTransaction.alert = "";

@@ -18,7 +18,15 @@ java EntryGateClient -ORBInitialPort 1075 -Name entry001 -LocalServer lserver001
 
 sleep 1
 
-java EntryGateClient -ORBInitialPort 1075 -Name entry001 -LocalServer lserver002 &
+java EntryGateClient -ORBInitialPort 1075 -Name entry002 -LocalServer lserver001 &
+
+sleep 1
+
+java EntryGateClient -ORBInitialPort 1075 -Name entry003 -LocalServer lserver002 &
+
+sleep 1
+
+java EntryGateClient -ORBInitialPort 1075 -Name entry004 -LocalServer lserver002 &
 
 sleep 1
 
@@ -30,8 +38,25 @@ java PayStationClient -ORBInitialPort 1075 -Name pay002 -LocalServer lserver001 
 
 sleep 1.5
 
+
+java PayStationClient -ORBInitialPort 1075 -Name pay003 -LocalServer lserver002 &
+
+sleep 1.5
+
+java PayStationClient -ORBInitialPort 1075 -Name pay004 -LocalServer lserver002 &
+
+sleep 1.5
+
 java ExitGateClient -ORBInitialPort 1075 -Name exit001 -LocalServer lserver001 &
 
 sleep 1
 
-java ExitGateClient -ORBInitialPort 1075 -Name exit002 -LocalServer lserver002
+java ExitGateClient -ORBInitialPort 1075 -Name exit002 -LocalServer lserver001 &
+
+sleep 1.5
+
+java ExitGateClient -ORBInitialPort 1075 -Name exit003 -LocalServer lserver002 &
+
+sleep 1
+
+java ExitGateClient -ORBInitialPort 1075 -Name exit004 -LocalServer lserver002
