@@ -21,6 +21,7 @@ public class PayStationClient extends JFrame {
     public PayStationClient() {
         //Load GUI
         initComponents();
+        btnPay.setEnabled(false);
     }
 
     public static void main(String args[]) {
@@ -89,12 +90,12 @@ public class PayStationClient extends JFrame {
                 orb.run();
             } else {
                 //error message telling user names must be unique
-                JOptionPane.showMessageDialog(null, "Paystation name must be unique");
+                JOptionPane.showMessageDialog(null, "Paystation name must be unique","",0);
                 return;
             }
         } catch (Exception e) {
             //can't connect to server
-            JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            JOptionPane.showMessageDialog(null, "Could not connect to server.","",0);
             System.exit(1);
         }
 
@@ -131,7 +132,7 @@ public class PayStationClient extends JFrame {
     private void btnPayActionPerformed(java.awt.event.ActionEvent evt) {
         //if paystation is not enabled, show error msg and don't continue.
         if (!payStationImpl.machine.enabled) {
-            JOptionPane.showMessageDialog(null, "Paystation is disabled", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Paystation is disabled", "Error", 0);
             return;
         }
         //get input reg
@@ -139,7 +140,7 @@ public class PayStationClient extends JFrame {
         //must be between 4 and 10 characters
         if ((reg.length() < 4) || (reg.length() > 10))
         {
-            JOptionPane.showMessageDialog(null, "Registration must be between 4 and 10 characters", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Registration must be between 4 and 10 characters", "Error", 0);
             return;
         }
         //if pay method returns true, successful.

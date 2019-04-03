@@ -18,6 +18,7 @@ public class HQ extends JFrame {
 
     public static HQImplementation hqImpl = new HQImplementation();
     static NamingContextExt nameService;
+    ScheduledExecutorService serverUpdater;
     ScheduledExecutorService tableUpdater;
 
     public HQ() {
@@ -27,6 +28,13 @@ public class HQ extends JFrame {
 
         // Add listeners to JTables and initialise the DefaultTableModels
         addListenersAndInitialiseModels();
+
+        //this updates the servers every 3 seconds
+        serverUpdater = Executors.newScheduledThreadPool(1);
+        serverUpdater.scheduleAtFixedRate(updateServers, 10, 3, TimeUnit.SECONDS);
+        //this updates the tables every 3 seconds
+        tableUpdater = Executors.newScheduledThreadPool(1);
+        tableUpdater.scheduleAtFixedRate(updateTables, 0, 3, TimeUnit.SECONDS);
     }
 
     public static void main(String args[]) {
@@ -42,18 +50,15 @@ public class HQ extends JFrame {
         setupClientServerConnections(args);
     }
 
-    private void btnRefreshServersActionPerformed(java.awt.event.ActionEvent evt) {
-        //clear previous entries
-        serverModel.setRowCount(0);
-        //load table will list of local servers
-        for (Machine machine : hqImpl.listOfLocalServers) {
-            serverModel.addRow(new String[]{machine.name});
-        }
-
-        //this updates the tables every 3 seconds
-        tableUpdater = Executors.newScheduledThreadPool(1);
-        tableUpdater.scheduleAtFixedRate(updateTables, 0, 3, TimeUnit.SECONDS);
-    }
+//    private void btnRefreshServersActionPerformed(java.awt.event.ActionEvent evt) {
+//        //clear previous entries
+//        serverModel.setRowCount(0);
+//        //load table will list of local servers
+//        for (Machine machine : hqImpl.listOfLocalServers) {
+//            serverModel.addRow(new String[]{machine.name});
+//        }
+//
+//    }
 
     private void btnToggleEntryActionPerformed(java.awt.event.ActionEvent evt) {
         try {
@@ -376,6 +381,20 @@ public class HQ extends JFrame {
             updateTables();
         }
     };
+    //Runnable to update tables every 3 seconds.
+    Runnable updateServers = new Runnable() {
+        @Override
+        public void run() {
+            if (hqImpl.listOfLocalServers.size() != serverModel.getRowCount()) {
+                //clear previous entries
+                serverModel.setRowCount(0);
+                //load table will list of local servers
+                for (Machine machine : hqImpl.listOfLocalServers) {
+                    serverModel.addRow(new String[]{machine.name});
+                }
+            }
+        }
+    };
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
@@ -391,7 +410,7 @@ public class HQ extends JFrame {
         javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
         javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
         tableServers = new javax.swing.JTable();
-        javax.swing.JButton btnRefreshServers = new javax.swing.JButton();
+//        javax.swing.JButton btnRefreshServers = new javax.swing.JButton();
         lblServerCashTotal = new javax.swing.JLabel();
         javax.swing.JPanel jPanel4 = new javax.swing.JPanel();
         javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
@@ -524,12 +543,12 @@ public class HQ extends JFrame {
         });
         jScrollPane1.setViewportView(tableServers);
 
-        btnRefreshServers.setText("Refresh Servers");
-        btnRefreshServers.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRefreshServersActionPerformed(evt);
-            }
-        });
+//        btnRefreshServers.setText("Refresh Servers");
+//        btnRefreshServers.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                btnRefreshServersActionPerformed(evt);
+//            }
+//        });
 
         lblServerCashTotal.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
         lblServerCashTotal.setText("Cash Total Today: £--");
@@ -554,7 +573,8 @@ public class HQ extends JFrame {
                                                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                                                                 .addGap(12, 12, 12)
                                                                                 .addComponent(lblServerCashTotal))
-                                                                        .addComponent(btnRefreshServers))))
+                                                                //        .addComponent(btnRefreshServers)
+                                                                )))
                                                 .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap())
         );
@@ -566,7 +586,7 @@ public class HQ extends JFrame {
                                 .addGap(12, 12, 12)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnRefreshServers)
+                                //.addComponent(btnRefreshServers)
                                 .addGap(12, 12, 12)
                                 .addComponent(lblServerCashTotal)
                                 .addContainerGap(36, Short.MAX_VALUE))

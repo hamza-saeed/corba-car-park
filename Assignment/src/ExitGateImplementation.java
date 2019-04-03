@@ -36,6 +36,7 @@ public class ExitGateImplementation extends ExitGatePOA {
         {
             JOptionPane.showMessageDialog(null,
                     "Vehicle with registration '" + reg + "' is not in car park.","Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         //if method returns true, successful, if not, alarm has been raised

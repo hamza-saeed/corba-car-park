@@ -85,12 +85,12 @@ public class EntryGateClient extends JFrame {
                 orb.run();
             } else {
                 //error message telling user names must be unique
-                JOptionPane.showMessageDialog(null, "Entry gate name must be unique");
+                JOptionPane.showMessageDialog(null, "Entry gate name must be unique","",0);
                 return;
             }
         } catch (Exception e) {
             //can't connect to server
-            JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            JOptionPane.showMessageDialog(null, "Could not connect to server.","",0);
             System.exit(1);
         }
     }
@@ -98,14 +98,14 @@ public class EntryGateClient extends JFrame {
     private void btnEnterMouseClicked(java.awt.event.MouseEvent evt) {
         //if entry gate is not enabled, show error msg and don't continue.
         if (!entryImpl.machine.enabled) {
-            JOptionPane.showMessageDialog(null, "Entry Gate is disabled", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Entry Gate is disabled", "", 0);
             return;
         }
         String reg = txtReg.getText();
         //must be between 4 and 10 characters
         if ((reg.length() < 4) || (reg.length() > 10))
         {
-            JOptionPane.showMessageDialog(null, "Registration must be between 4 and 10 characters", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Registration must be between 4 and 10 characters", "", 0);
             return;
         }
         //car entering
