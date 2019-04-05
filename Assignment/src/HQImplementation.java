@@ -46,5 +46,12 @@ public class HQImplementation extends HQServerPOA {
         return parkingTransactions;
     }
 
+    @Override
+    public Machine[] listOfLocalServers() {
+        Machine[] machine = new Machine[listOfLocalServers.size()];
+        listOfLocalServers.toArray(machine);
+        return machine;
+    }
+
 
 }

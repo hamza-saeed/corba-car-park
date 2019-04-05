@@ -32,17 +32,18 @@ public class PayStationImplementation extends PayStationPOA {
 
     @Override
     public void pay(String carReg, int duration, double amountPaid) {
-        //only continue if ticket has not been paid
-        if (lServerRef.vehicle_already_paid(carReg)) {
-            JOptionPane.showMessageDialog(null,
-                    "Ticket has already been paid.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
 
         //only continue if vehicle is in carPark
         if (!lServerRef.vehicle_in_car_park(carReg)) {
             JOptionPane.showMessageDialog(null,
                     "Vehicle with registration '" + carReg + "' is NOT in car park.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        //only continue if ticket has not been paid
+        if (lServerRef.vehicle_already_paid(carReg)) {
+            JOptionPane.showMessageDialog(null,
+                    "Ticket has already been paid.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

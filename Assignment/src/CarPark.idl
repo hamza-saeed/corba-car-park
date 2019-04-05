@@ -64,7 +64,7 @@ module CarPark {
         void reset();
     };
 
-    interface  LocalServer {
+    interface LocalServer {
         readonly attribute Machine machine;
         readonly attribute string location;
         readonly attribute List_of_parking_transactions log;
@@ -94,8 +94,9 @@ module CarPark {
         boolean isExitGateNameUnique(in string name);
     };
 
-     interface  HQServer {
+     interface HQServer {
         readonly attribute List_of_parking_transactions listOfAlerts;
+        readonly attribute List_of_machines listOfLocalServers;
         void raise_alarm(in ParkingTransaction transaction);
         void register_local_server(in Machine machine);
         boolean isLocalServerNameUnique(in string name);
